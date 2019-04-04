@@ -1,0 +1,34 @@
+Team|StadiumName|Location|StadiumCoords|FIPS
+Arizona Diamondbacks|Chase Field|Phoenix, Arizona|3.44541, -112.06668|FIPS:04
+Arizona Diamondbacks|Chase Field|Phoenix, Arizona|3.44541, -112.06668|FIPS:04
+Arizona Diamondbacks|Chase Field|Phoenix, Arizona|3.44541, -112.06668|FIPS:04
+Arizona Diamondbacks|Chase Field|Phoenix, Arizona|3.44541, -112.06668|FIPS:04
+Arizona Diamondbacks|Chase Field|Phoenix, Arizona|3.44541, -112.06668|FIPS:04
+Arizona Diamondbacks|Chase Field|Phoenix, Arizona|3.44541, -112.06668|FIPS:04
+Arizona Diamondbacks|Chase Field|Phoenix, Arizona|3.44541, -112.06668|FIPS:04
+
+https://www.ncdc.noaa.gov/stations?extent=%2833.2938%2C-112.4423%29%2C%2833.8077%2C-111.7722%29
+https://www.ncdc.noaa.gov/cdo-web/api/v2/stations?extent=%2833.2938%2C-112.4423%29%2C%2833.8077%2C-111.7722%29
+https://www.ncdc.noaa.gov/cdo-web/api/v2/stations?limit=100&extent=33.3294%2C-112.4217%2C33.7529%2C-111.7584&startdate=2019-01-01
+
+https://www.ncdc.noaa.gov/cdo-web/api/v2/data?stationid=GHCND%3AUSW00003184&datasetid=NORMAL_DLY&startdate=2019-02-30&enddate=2019-04-02
+
+{"mindate":"1867-08-01","maxdate":"2019-03-29","name":"Arizona","datacoverage":1,"id":"FIPS:04"}
+{"mindate":"1850-10-01","maxdate":"2019-03-29","name":"California","datacoverage":1,"id":"FIPS:06"}
+{"mindate":"1852-10-01","maxdate":"2019-03-29","name":"Colorado","datacoverage":1,"id":"FIPS:08"}
+{"mindate":"1872-01-01","maxdate":"2019-03-27","name":"District of Columbia","datacoverage":1,"id":"FIPS:11"}
+{"mindate":"1871-10-01","maxdate":"2019-03-29","name":"Florida","datacoverage":1,"id":"FIPS:12"}
+{"mindate":"1849-01-01","maxdate":"2019-03-29","name":"Georgia","datacoverage":1,"id":"FIPS:13"}
+{"mindate":"1870-10-15","maxdate":"2019-03-29","name":"Illinois","datacoverage":1,"id":"FIPS:17"}
+{"mindate":"1857-04-01","maxdate":"2019-03-29","name":"Kansas","datacoverage":1,"id":"FIPS:20"}
+{"mindate":"1880-01-01","maxdate":"2019-03-29","name":"Maryland","datacoverage":1,"id":"FIPS:24"}
+{"mindate":"1831-02-01","maxdate":"2019-03-29","name":"Massachusetts","datacoverage":1,"id":"FIPS:25"}
+{"mindate":"1887-06-01","maxdate":"2019-03-29","name":"Michigan","datacoverage":1,"id":"FIPS:26"}
+{"mindate":"1886-01-01","maxdate":"2019-03-29","name":"Minnesota","datacoverage":1,"id":"FIPS:27"}
+{"mindate":"1892-04-01","maxdate":"2019-03-29","name":"Missouri","datacoverage":1,"id":"FIPS:29"}
+{"mindate":"1869-01-01","maxdate":"2019-03-29","name":"New York","datacoverage":1,"id":"FIPS:36"}
+{"mindate":"1878-02-01","maxdate":"2019-03-29","name":"Ohio","datacoverage":1,"id":"FIPS:39"}
+{"mindate":"1849-04-01","maxdate":"2019-03-29","name":"Pennsylvania","datacoverage":1,"id":"FIPS:42"}
+{"mindate":"1852-04-01","maxdate":"2019-03-29","name":"Texas","datacoverage":1,"id":"FIPS:48"}
+{"mindate":"1856-01-01","maxdate":"2019-03-29","name":"Washington","datacoverage":1,"id":"FIPS:53"}
+{"mindate":"1871-01-01","maxdate":"2019-03-29","name":"Wisconsin","datacoverage":1,"id":"FIPS:55"}
