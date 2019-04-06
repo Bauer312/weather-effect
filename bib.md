@@ -24,3 +24,4 @@ The writer includes three paragraphs: a summary, an evaluation of the text, and 
     This data and analysis provides some confirmation for the expectation that weather affects the velocity of the pitch.
 
 ### Kagan, David, and Mitchell, Chris. "The Effect of the Marine Layer on Fly Balls." *The Hardball Times Baseball Annual*, 2017, https://physics.csuchico.edu/baseball/Pubs/MarineLayer.pdf. Accessed 3 April 2019.
+    The marine layer is a phenomenon that occurs on the west coast of the US.  Cool, moist air from the Pacific Ocean moves inland and gets trapped under the warmer air.  This typically occurs in evenings in June and July.  The lower temperature is expected to reduce the distance that a ball travels, but the higher humidity is expected to increase the distance it travels.
