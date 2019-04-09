@@ -11,7 +11,10 @@ The writer includes three paragraphs: a summary, an evaluation of the text, and 
     All you do is use a tab to indent.
 
 ### Bahill, A. Terry. *The Science of Baseball*. 2nd ed. Springer, 2019.
-
+    The science and physics behind how many aspects of baseball work are discussed in this book. It is very mathematically focused. Weather conditions, such as temperature, are brought up frequently, but are only the focus of one or two chapters of the book.
+    
+    There are a few sections in this book that could greatly help with our research. 
+    
 ### Constancio, Chris. “Temperature Effects.” *The Hardball Times*, 23 Oct. 2006, https://tht.fangraphs.com/temperature-effects/. Accessed 3 April 2019.
     The author analyzed 2000 games from the 05-06 season to determine the effects of temperature on various aspects of the game. After some analysis, he determined that Pitchers generally have worse control but higher strikeout rates and better luck with balls in play in cold weather. On the offensive side of the ball, it is noted that home-runs are rare and batted balls in play are less likely to lead to hits.
     
