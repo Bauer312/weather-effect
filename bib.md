@@ -29,7 +29,11 @@ The writer includes three paragraphs: a summary, an evaluation of the text, and 
     The marine layer is a phenomenon that occurs on the west coast of the US.  Cool, moist air from the Pacific Ocean moves inland and gets trapped under the warmer air.  This typically occurs in evenings in June and July.  The lower temperature is expected to reduce the distance that a ball travels, but the higher humidity is expected to increase the distance it travels.
     
 ### Andrew Dominijanni. "The Physics and Timing of the Infield Bounce" The Hardball Times, March 1, 2018 https://tht.fangraphs.com/the-physics-and-timing-of-the-infield-bounce-throw/ .  Accessed 7 April 2019.
+    Examines the forces on a ball in flight and provides a reasonably accurate fixed drag coefficient of 0.35 .
 
 ### "Baseball Size" SizeChart.com, http://sizechart.com/sports/baseball/baseball-size/index.html  MG // Martin Granum
+    Provides the measurements of a baseball.
 
 ### Christina Lee.  "Mass of a Baseball"  The Physics Factbook, 1999  https://hypertextbook.com/facts/1999/ChristinaLee.shtml
+    Provides the mass of a baseball as well as the composition and dimensions of the layers.
+    
