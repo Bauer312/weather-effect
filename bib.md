@@ -14,8 +14,10 @@ The writer includes three paragraphs: a summary, an evaluation of the text, and 
 
 ### Constancio, Chris. “Temperature Effects.” *The Hardball Times*, 23 Oct. 2006, https://tht.fangraphs.com/temperature-effects/. Accessed 3 April 2019.
     The author analyzed 2000 games from the 05-06 season to determine the effects of temperature on various aspects of the game. After some analysis, he determined that Pitchers generally have worse control but higher strikeout rates and better luck with balls in play in cold weather. On the offensive side of the ball, it is noted that home-runs are rare and batted balls in play are less likely to lead to hits.
+    
 ### Schifman, Gerald. “Cold Weather, Positions and Penalties.” *The Hardball Times*, 7 Jan 2016, https://tht.fangraphs.com/cold-weather-positions-and-penalties/. Accessed 3 April 2019.
-
+    The author analyzed the effects of temperature on various different positions and analyzed various statistics to determine what the main impacts were. He determined that positions that players at more active field positions seem to fare better than their idler teammates in the cold.
+    
 ### Zimmerman, Jeff. “Quick Study: Cold-Weather Effects on Velocity.” *FanGraphs*, 12 April 2016, https://blogs.fangraphs.com/instagraphs/quick-study-cold-weather-effects-on-velocity/. Accessed 3 April 2019.
     The author runs a daily velocity report that measures the pitching velocity of MLB pitchers to determine if any have shown major changes to their pitching velocity.  After a game played in particularly cold weather, the author noticed that both starting pitchers exhibited large drops in velocity.  The author looked at data from 2008-2015 and determined that in games played below 40 degrees (Farenheit), pitchers lost around 0.5 mph in velocity.
 
