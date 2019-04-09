@@ -5,13 +5,10 @@ The writer includes three paragraphs: a summary, an evaluation of the text, and 
 
 
 ### Cross, Rod. *Physics of Baseball & Softball*. Springer, 2011.
-    The review
-    Should
-    Go Here...
-    All you do is use a tab to indent.
-
+    This book mainly focuses on the physics involved in the sport of baseball. Simple math is used to model various physical aspects of the game. The effects of weather, altitude, temperature, humidity, and wind are briefly discussed, but are not the focus of the work.
+    
 ### Bahill, A. Terry. *The Science of Baseball*. 2nd ed. Springer, 2019.
-    The science and physics behind how many aspects of baseball work are discussed in this book. It is very mathematically focused. Weather conditions, such as temperature, are brought up frequently, but are only the focus of one or two chapters of the book.
+    The science and physics behind how many aspects of baseball work are discussed in this book. It is very mathematically focused. Weather conditions, such as temperature, are brought up frequently, but are only the focus of one or two chapters of the book. Weather conditions, such as air pressure, temperature, and humidity, as well as modeling philosophies, are discussed.
     
     There are a few sections in this book that could greatly help with our research. 
     
