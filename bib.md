@@ -6,18 +6,18 @@ The writer includes three paragraphs: a summary, an evaluation of the text, and 
 
 ### Cross, Rod. *Physics of Baseball & Softball*. Springer, 2011.
     This book mainly focuses on the physics involved in the sport of baseball. Simple math is used to model various physical aspects of the game. The effects of weather, altitude, temperature, humidity, and wind are briefly discussed, but are not the focus of the work.
-
+    
 ### Bahill, A. Terry. *The Science of Baseball*. 2nd ed. Springer, 2019.
     The science and physics behind how many aspects of baseball work are discussed in this book. It is very mathematically focused. Weather conditions, such as temperature, are brought up frequently, but are only the focus of one or two chapters of the book. Weather conditions, such as air pressure, temperature, and humidity, as well as modeling philosophies, are discussed.
     
-    There are a few sections in this book that could greatly help with   our research.
-
+    There are a few sections in this book that could greatly help with our research. 
+    
 ### Constancio, Chris. “Temperature Effects.” *The Hardball Times*, 23 Oct. 2006, https://tht.fangraphs.com/temperature-effects/. Accessed 3 April 2019.
-    This article does not present any data but offers some observations that may be worth examining while using data.  First, the author suggests that in cold weather, pitchers that rely on breaking balls are at a disadvantage vs. hard-throwing pitchers.  It also suggests that patient hitting teams also fare better during cold weather than free-swinging teams.  Each of these two anecdotal assertions could be examined more closely using weather data.
-
+    The author analyzed 2000 games from the 05-06 season to determine the effects of temperature on various aspects of the game. After some analysis, he determined that Pitchers generally have worse control but higher strikeout rates and better luck with balls in play in cold weather. On the offensive side of the ball, it is noted that home-runs are rare and batted balls in play are less likely to lead to hits.
+    
 ### Schifman, Gerald. “Cold Weather, Positions and Penalties.” *The Hardball Times*, 7 Jan 2016, https://tht.fangraphs.com/cold-weather-positions-and-penalties/. Accessed 3 April 2019.
-    This paper examines how the hitting performance of players is affected across the temperature spectrum.  The authors limit their study to night games and use game-time temperature only.  In certain cases, they use wind-chill instead of standard temperature.  The findings indicate that players associated with positions that see frequent action are less affected by colder weather.  Additionally, they found that the DH penalty appears to disappear when it is very cold.
-
+    The author analyzed the effects of temperature on various different positions and analyzed various statistics to determine what the main impacts were. He determined that positions that players at more active field positions seem to fare better than their idler teammates in the cold.
+    
 ### Zimmerman, Jeff. “Quick Study: Cold-Weather Effects on Velocity.” *FanGraphs*, 12 April 2016, https://blogs.fangraphs.com/instagraphs/quick-study-cold-weather-effects-on-velocity/. Accessed 3 April 2019.
     The author runs a daily velocity report that measures the pitching velocity of MLB pitchers to determine if any have shown major changes to their pitching velocity.  After a game played in particularly cold weather, the author noticed that both starting pitchers exhibited large drops in velocity.  The author looked at data from 2008-2015 and determined that in games played below 40 degrees (Farenheit), pitchers lost around 0.5 mph in velocity.
 
