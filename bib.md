@@ -13,7 +13,7 @@ The writer includes three paragraphs: a summary, an evaluation of the text, and 
 ### Bahill, A. Terry. *The Science of Baseball*. 2nd ed. Springer, 2019.
 
 ### Constancio, Chris. “Temperature Effects.” *The Hardball Times*, 23 Oct. 2006, https://tht.fangraphs.com/temperature-effects/. Accessed 3 April 2019.
-
+    The author analyzed 2000 games from the 05-06 season to determine the effects of temperature on various aspects of the game. After some analysis, he determined that Pitchers generally have worse control but higher strikeout rates and better luck with balls in play in cold weather. On the offensive side of the ball, it is noted that home-runs are rare and batted balls in play are less likely to lead to hits.
 ### Schifman, Gerald. “Cold Weather, Positions and Penalties.” *The Hardball Times*, 7 Jan 2016, https://tht.fangraphs.com/cold-weather-positions-and-penalties/. Accessed 3 April 2019.
 
 ### Zimmerman, Jeff. “Quick Study: Cold-Weather Effects on Velocity.” *FanGraphs*, 12 April 2016, https://blogs.fangraphs.com/instagraphs/quick-study-cold-weather-effects-on-velocity/. Accessed 3 April 2019.
