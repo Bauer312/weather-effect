@@ -1,0 +1,91 @@
+Summary
+URL: https://api.weather.com/v2/pws/history/all?stationId=KCASANFR1213&format=json&units=e&date=20190204&apiKey=6532d6454b8aa370768e63d6ba5a832e
+Status: 200
+Source: Network
+Address: 23.79.192.175:443
+
+Request
+:method: GET
+:scheme: https
+:authority: api.weather.com
+:path: /v2/pws/history/all?stationId=KCASANFR1213&format=json&units=e&date=20190204&apiKey=6532d6454b8aa370768e63d6ba5a832e
+Accept: application/json, text/plain, */*
+Origin: https://www.wunderground.com
+Accept-Encoding: br, gzip, deflate
+Host: api.weather.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Safari/605.1.15
+Accept-Language: en-us
+Referer: https://www.wunderground.com/
+Connection: keep-alive
+
+Response
+:status: 200
+Content-Type: application/json; charset=UTF-8
+Cache-Control: max-age=180
+Access-Control-Allow-Origin: *
+Date: Sat, 06 Apr 2019 16:10:18 GMT
+Content-Encoding: gzip
+Content-Length: 12690
+Vary: Accept-Encoding
+surrogate-control: ESI/1.0
+x-region: us-east-1
+x-trace-token: 3a9b6c8e-eeb9-4bd9-9b6c-8eeeb9cbd98a
+
+Query String Parameters
+stationId: KCASANFR1213
+format: json
+units: e
+date: 20190204
+apiKey: 6532d6454b8aa370768e63d6ba5a832e
+
+
+Summary
+URL: https://api.weather.com/v2/pws/history/all?stationId=KCASANFR1213&format=json&units=e&date=20180604&apiKey=6532d6454b8aa370768e63d6ba5a832e
+Status: 200
+Source: Network
+Address: 23.79.192.175:443
+
+Request
+:method: GET
+:scheme: https
+:authority: api.weather.com
+:path: /v2/pws/history/all?stationId=KCASANFR1213&format=json&units=e&date=20180604&apiKey=6532d6454b8aa370768e63d6ba5a832e
+Accept: application/json, text/plain, */*
+Origin: https://www.wunderground.com
+Accept-Encoding: br, gzip, deflate
+Host: api.weather.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Safari/605.1.15
+Accept-Language: en-us
+Referer: https://www.wunderground.com/
+Connection: keep-alive
+
+Response
+:status: 200
+Content-Type: application/json; charset=UTF-8
+Cache-Control: max-age=171
+Access-Control-Allow-Origin: *
+Date: Sat, 06 Apr 2019 16:17:31 GMT
+Content-Encoding: gzip
+Content-Length: 8954
+Vary: Accept-Encoding
+surrogate-control: ESI/1.0
+x-region: us-east-1
+x-trace-token: 3ecf9046-ebca-4bd6-8f90-46ebcaabd669
+
+Query String Parameters
+stationId: KCASANFR1213
+format: json
+units: e
+date: 20180604
+apiKey: 6532d6454b8aa370768e63d6ba5a832e
+
+
+curl -H "Accept: application/json, text/plain, */*" \
+-H "Origin: https://www.wunderground.com" \
+-H "Accept-Encoding: br, gzip, deflate" \
+-H "Host: api.weather.com" \
+-H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Safari/605.1.15" \
+-H "Accept-Language: en-us" \
+-H "Referer: https://www.wunderground.com/" \
+-o test.gz \
+"https://api.weather.com/v2/pws/history/all?stationId=KCASANFR1193&format=json&units=e&date=20180604&apiKey=6532d6454b8aa370768e63d6ba5a832e"
