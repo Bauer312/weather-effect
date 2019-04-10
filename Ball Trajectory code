@@ -1,0 +1,47 @@
+#doesn't currently factor in wind or precipitation
+
+# knowns 
+g = 9.80665 # m/s2  gravity
+m = .1455 # kg  mass of baseball
+R = 0.03683  # baseball radius in meters
+cd = .35     # drag coefficient
+# v = initial velocity
+# h = height above plate ball is hit
+# th = angle of hit
+# den = air density
+
+
+# unknowns
+# cl = lift coefficient
+# y = current height relative to height pitch is hit at   hits ground at y = -h
+# x = distance of hit
+# t = time in the air
+# ax = acceleration in x direction
+# ay = acceleration in y direction
+# vx = velocity in x direction
+# vy = velocity in y direction
+
+
+# equations
+
+# ax = -k*v*(Cd*vx + Cl*vy)     acceleration in the x direction
+
+# ay = k*v*(Cl*vx - Cd*vy) - g    or      Cl = [((ay+g)/(k*v))+Cd*vy]/vx      acceleration in y direction converted for coefficient of lift
+
+# y = .5*ay*t^2 + vy*t + h   y path of ball
+
+# x = .5*ax*t^2 +vx*t        x path of ball
+
+# ay = tan(th)*ax   =  (ax/cos(th))*sin(th)             or      ax = ay / tan(th)      tan(th) = sin(th)/cos(th)
+
+
+k = (.5*den*pi*R^2) / m
+vx = v*cos(th)
+vy = v*sin(th)
+
+# used https://www.symbolab.com/solver/solve-for-equation-calculator to simplify equations
+
+ax = -(vy*g + k*v*cd*vx^2 + vy*k*v*cd) / (vy*tan(th) + vx)
+
+t = (-vy + sqrt(vy^2 - 2*ax*(sin(th)/cos(th))*(-y + h))) / (ax*(sin(th)/cos(th)))   #   y = -h at max distance
+
