@@ -3,6 +3,7 @@ package main
 import (
 	"compress/gzip"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -69,13 +70,19 @@ type ObservationSet struct {
 }
 
 var (
-	inputDirectory string
+	inputDirectory = flag.String("dir", "", "Location of directory containing weather data")
 	outputPath     string
 )
 
 func main() {
-	inputDirectory = os.Args[1]
-	walkDir(inputDirectory, 5)
+	flag.Parse()
+
+	if len(*inputDirectory) == 0 {
+		flag.Usage()
+	}
+
+	writeOutputHeader()
+	walkDir(*inputDirectory, 5)
 }
 
 func walkDir(path string, level int) {
@@ -143,26 +150,22 @@ func streamJSON(path string) {
 }
 
 func writeOutputHeader() {
-	fmt.Printf("%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n",
-		"StationID", "Timezone", "UTCTime", "LocalTime",
-		"Epoch", "Latitude", "Longitude",
+	fmt.Printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+		"StationID", "LocalTime",
 		"SolarRadiationHigh", "UVHigh", "WindDirAvg",
-		"HumidityHigh", "HumidityLow", "HumidityAvg",
-		"QCStatus", "TempHigh", "TempLow", "TempAvg",
-		"WindspeedHigh", "WindspeedLow", "WindspeedAvg",
-		"WindgustHigh", "WindgustLow", "WindgustAvg",
-		"DewpointHigh", "DewpointLow", "DewpointAvg")
+		"Humidity", "QCStatus", "Temp",
+		"Windspeed", "Windgust", "Dewpoint",
+		"Windchill", "HeatIndex",
+		"PressureMax", "PressureMin", "PressureTrend",
+		"PrecipitationRate", "PrecipitationTotal")
 }
 func writeOutput(ob Observation) {
-	fmt.Printf("%s|%s|%s|%s|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v|%v\n",
-		ob.StationID, ob.Tz, ob.ObsTimeUtc, ob.ObsTimeLocal,
-		ob.Epoch, ob.Lat, ob.Lon,
+	fmt.Printf("%s,%s,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
+		ob.StationID, ob.ObsTimeLocal,
 		ob.SolarRadiationHigh, ob.UvHigh, ob.WinddirAvg,
-		ob.HumidityHigh, ob.HumidityLow, ob.HumidityAvg,
-		ob.QcStatus,
-		ob.IV.TempHigh, ob.IV.TempLow, ob.IV.TempAvg,
-		ob.IV.WindspeedHigh, ob.IV.WindspeedLow, ob.IV.WindspeedAvg,
-		ob.IV.WindgustHigh, ob.IV.WindgustLow, ob.IV.WindgustAvg,
-		ob.IV.DewptHigh, ob.IV.DewptLow, ob.IV.DewptAvg)
-	//fmt.Println(ob)
+		ob.HumidityAvg, ob.QcStatus, ob.IV.TempAvg,
+		ob.IV.WindspeedAvg, ob.IV.WindgustAvg, ob.IV.DewptAvg,
+		ob.IV.WindchillAvg, ob.IV.HeatindexAvg,
+		ob.IV.PressureMax, ob.IV.PressureMin, ob.IV.PressureTrend,
+		ob.IV.PrecipRate, ob.IV.PrecipTotal)
 }
