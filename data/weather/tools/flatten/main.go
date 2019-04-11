@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -127,7 +128,7 @@ func streamZip(path string) {
 		log.Fatal(err)
 	}
 	for _, ob := range obs.Obs {
-		writeOutput(ob)
+		validateObservationTime(ob)
 	}
 }
 
@@ -145,6 +146,19 @@ func streamJSON(path string) {
 		log.Fatal(err)
 	}
 	for _, ob := range obs.Obs {
+		validateObservationTime(ob)
+	}
+}
+
+func validateObservationTime(ob Observation) {
+	components := strings.Split(ob.ObsTimeLocal, " ")
+	timeComponents := strings.Split(components[1], ":")
+	hour, err := strconv.Atoi(timeComponents[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+	//Handle times that are from 10AM through 3AM
+	if hour > 9 || hour < 3 {
 		writeOutput(ob)
 	}
 }
