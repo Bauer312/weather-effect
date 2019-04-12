@@ -16,7 +16,8 @@ The station dashboards are in the format https://www.wunderground.com/dashboard/
 
 ### Boston
 * Fenway Park
-    KMABOSTO55
+    https://www.wunderground.com/dashboard/pws/KMABOSTO55
+    KMABROOK5 (Hardware:Acurite 1025 Software:myAcuRite)
 
 ### Chicago Cubs
 * Wrigley Field
