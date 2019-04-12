@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"compress/gzip"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -73,6 +76,7 @@ type ObservationSet struct {
 var (
 	inputDirectory = flag.String("dir", "", "Location of directory containing weather data")
 	outputPath     string
+	altitude       map[string]float64
 )
 
 func main() {
@@ -82,6 +86,7 @@ func main() {
 		flag.Usage()
 	}
 
+	populateAltitude(*inputDirectory)
 	writeOutputHeader()
 	walkDir(*inputDirectory, 5)
 }
@@ -164,22 +169,76 @@ func validateObservationTime(ob Observation) {
 }
 
 func writeOutputHeader() {
-	fmt.Printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+	fmt.Printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
 		"StationID", "LocalTime",
-		"SolarRadiationHigh", "UVHigh", "WindDirAvg",
-		"Humidity", "QCStatus", "Temp",
+		"Humidity", "Temp", "WindDirAvg",
 		"Windspeed", "Windgust", "Dewpoint",
 		"Windchill", "HeatIndex",
-		"PressureMax", "PressureMin", "PressureTrend",
-		"PrecipitationRate", "PrecipitationTotal")
+		"PrecipitationRate", "PrecipitationTotal",
+		"BarometricPressure", "AirDensity")
 }
 func writeOutput(ob Observation) {
-	fmt.Printf("%s,%s,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
+	cTemp := fahrenheitToCelcius(ob.IV.TempAvg)
+	avgPres := (ob.IV.PressureMax + ob.IV.PressureMin) / 2.0
+	sp := stationPressure(cTemp, altitude[ob.StationID], avgPres)
+	svp := saturationVaporPressure(cTemp)
+	rho := airDensity(cTemp, sp, svp, ob.HumidityAvg)
+	fmt.Printf("%s,%s,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
 		ob.StationID, ob.ObsTimeLocal,
-		ob.SolarRadiationHigh, ob.UvHigh, ob.WinddirAvg,
-		ob.HumidityAvg, ob.QcStatus, ob.IV.TempAvg,
+		ob.HumidityAvg, ob.IV.TempAvg, ob.WinddirAvg,
 		ob.IV.WindspeedAvg, ob.IV.WindgustAvg, ob.IV.DewptAvg,
 		ob.IV.WindchillAvg, ob.IV.HeatindexAvg,
-		ob.IV.PressureMax, ob.IV.PressureMin, ob.IV.PressureTrend,
-		ob.IV.PrecipRate, ob.IV.PrecipTotal)
+		ob.IV.PrecipRate, ob.IV.PrecipTotal, avgPres, rho)
+}
+
+func fahrenheitToCelcius(fTemp float64) float64 {
+	return (fTemp - 32.0) * 5.0 / 9.0
+}
+
+func inchesToMM(in float64) float64 {
+	return in * 25.4
+}
+
+func feetToMeter(ft float64) float64 {
+	return ft * 0.3048
+}
+
+/*
+saturationVaporPressure is measured in mm Hg and this formula is described in
+		*The Science of Baseball* (2019 2nd edition) by *A. Terry Bahill*
+	in section 7.8 on page 181.  Temperature is in degrees Celcius.
+*/
+func saturationVaporPressure(cTemp float64) float64 {
+	pVal := cTemp * (18.687 - (cTemp / 234.5)) / (257.14 + cTemp)
+	return 4.5841 * math.Pow(math.E, pVal)
+}
+
+func airDensity(cTemp, airPres, svp, hum float64) float64 {
+	h := hum / 100.0
+	return 1.2929 * (273.0 / (cTemp + 273.0)) * ((airPres - (0.379 * svp * h)) / 760.0)
+}
+
+func stationPressure(cTemp, alt, bar float64) float64 {
+	pVal := (-9.80665 * 0.289644 * feetToMeter(alt)) / (8.31447 * (cTemp + 273.15))
+	return inchesToMM(bar) * math.Pow(math.E, pVal)
+}
+
+func populateAltitude(dir string) {
+	filePath := path.Join(dir, "altitude.dat")
+	fp, err := os.Open(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fp.Close()
+	altitude = make(map[string]float64)
+
+	sc := bufio.NewScanner(fp)
+	for sc.Scan() {
+		comp := strings.Split(sc.Text(), ",")
+		fv, err := strconv.ParseFloat(comp[1], 64)
+		if err != nil {
+			log.Fatal(err)
+		}
+		altitude[comp[0]] = fv
+	}
 }

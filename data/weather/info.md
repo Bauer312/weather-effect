@@ -3,8 +3,8 @@
 The station dashboards are in the format https://www.wunderground.com/dashboard/pws/KCASEASI10
 
 ### Arizona
-* Encanto Vista
-    KAZPHOEN295
+* WS-2902A Test Station
+    KAZPHOEN469 - Elevation 1280 ft
 
 ### Atlanta
 * Continental Colony
@@ -68,9 +68,9 @@ The station dashboards are in the format https://www.wunderground.com/dashboard/
 
 ### San Francisco
 * Mission Bay Commons
-    https://www.wunderground.com/dashboard/pws/KCASANFR1213
+    https://www.wunderground.com/dashboard/pws/KCASANFR1213 Elevation 7.0 feet
 * South Beach
-    https://www.wunderground.com/dashboard/pws/KCASANFR1193
+    https://www.wunderground.com/dashboard/pws/KCASANFR1193 Elevation 69.0 feet
 
 ### Seattle
 
