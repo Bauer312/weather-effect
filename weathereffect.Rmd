@@ -43,9 +43,9 @@ Our more accurate weather data allows us to better model the differences in ball
 
 ## MLB Baseball Savant
 
-The Baseball Savant site (https://baseballsavant.mlb.com) provides detailed pitch-by-pitch data directly from Major League Baseball.  This data is generated using a suite of instruments installed in every major league stadium.  Gathering data for research use can be done using the search function (https://baseballsavant.mlb.com/statcast_search).  The amount of data that can be retrieved in a single query is limited, so the retrieval of an entire season can be done by querying for each team individually and then selecting the "download CSV" option.  The _sv_id_ column in the data gives an encoded date and time for each pitch.
+The Baseball Savant site (https://baseballsavant.mlb.com) provides detailed pitch-by-pitch data directly from Major League Baseball.  This data is generated using a suite of instruments installed in every major league stadium.  Gathering data for research use can be done using the search function (https://baseballsavant.mlb.com/statcast_search).  The amount of data that can be retrieved in a single query is limited, so the retrieval of an entire season can be done by querying for each team individually and then selecting the "download CSV" option.  The _sv_id_ column in the data gives an encoded date and time for each pitch.  For example, an _sv_id_ of `181001_195541` refers to a pitch that occured on October 1, 2018 at 19:55:41.  The data does not distinguish whether that refers to local time, eastern time, or UTC time.  To determine the value, we examined all Savant records in which _sv_id_ was populated and the _pitch_number_ and _at_bat_number_ were both 1.  This indicated the time of the first pitch of each game.  Using Baseball Reference (https://baseball-reference.com) we can find the start time of each game and compare to the time portion of _sv_id_.  The April 10, 2018 game between the Cubs and Pirates at Wrigley Field had a published start time of 1:20 PM Central (2:20 PM Eastern).  The _sv_id_ for the first pitch was `180410_182326` indicating that the first pitch was at 6:23 PM.  Chicago is 5 hours behind UTC time, so 1:23 PM in Chicago corresponds with 6:23 PM UTC.  This shows that the time portion of the _sv_id_ field is listed as UTC time.
 
-### Weather Underground
+## Weather Underground
 
 Weather Underground is a site (https://www.wunderground.com) that contains data for a number of "official" weather stations as well as ~250,000 personal weather stations from around the globe.  Each weather station has a unique identifying code in the Weather Underground system.  For example, weather station KMABROOK5 is at the corner of Beacon and Carlton St just a few blocks west of Fenway Park.  Weather station KMABOSTO55 is listed as at Fenway Park itself, but unfortunately attempts to query the Weather Underground API for data from this station was unsuccessful.  When viewing the dashboard for a weather station (https://www.wunderground.com/dashboard/pws/KMABROOK5), all data for that weather station for a particular day is loaded.  By looking at the format of the request made by the web browser, we can see how to query any weather station for any day.  The data is returned as a set of observations in the JSON format.  We have developed a tool that "flattens" these observations into a CSV format suitable for use in R.  An example of the raw observation data provided by Weather Underground is shown below:
 ```json
@@ -78,13 +78,14 @@ Each weather station reports data to Weather Underground periodically.  However,
 
 The formula for calculating air density is described in @bahill2019sb [pp180-182] and is an input to the ball trajectory code.  The three inputs to the calculation are the temperature, the humidity level, and the true station pressure (if provided with sea level-corrected pressure, it must be adjusted to true station pressure).
 
+# Methodology
 
+How are we going to do this stuff...
 
-<!--
-# References
-\setlength{\parindent}{-0.2in}
-\setlength{\leftskip}{0.2in}
-\setlength{\parskip}{8pt}
-\vspace*{-0.2in}
-\noindent
--->
+As a prerequisite to conducting analysis of the data, we must first assemble a clean dataset that is properly merged and contains relevant information.  As both the Baseball Savant and the Weather Underground data include a UTC time, we can merge data using this.  The Baseball Savant data gives an exact time (to the second) while the Weather Underground data gives a timestamp that indicates the data is valid from the previous reading up to and including the timestamp.  We must process the Weather Underground data ordered by station and time, and generate an explicit time range from the implied range that comes from the observation data and the ordering of the observation data.  We must also generate a cross referencing of home team to weather station.  In the 2018 baseball season, the Baseball Savant data set includes 721,190 records and 126,283 records in which the ball was put into play.  The _sv_id_ field was empty for 392,521 of the records and for 68,878 of the records in which the ball was put into play.  This field is necessary for merging with weather data so we must generate a value to use with the missing data.  Because the weather data has an implied granularity that ranges from a few minutes all the way up to nearly an hour, we only need to get each missing _sv_id_ value correct to within a few minutes to be considered clean for merging purposes.
+
+We will calculate the air density for each weather observation using information from nearby airports to determine if the reported pressure is true pressure or sea level-corrected pressure.  This value will be added as a column to the weather data.
+
+# Notes
+
+The formatting for this paper is based on templates provided by Steven V. Miller at Clemson University and are located on his Github account (https://github.com/svmiller).
