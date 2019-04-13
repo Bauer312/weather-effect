@@ -169,12 +169,10 @@ func validateObservationTime(ob Observation) {
 }
 
 func writeOutputHeader() {
-	fmt.Printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+	fmt.Printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
 		"StationID", "LocalTime",
 		"Humidity", "Temp", "WindDirAvg",
-		"Windspeed", "Windgust", "Dewpoint",
-		"Windchill", "HeatIndex",
-		"PrecipitationRate", "PrecipitationTotal",
+		"Windspeed", "PrecipitationRate", "PrecipitationTotal",
 		"BarometricPressure", "AirDensitySL", "AirDensityT")
 }
 func writeOutput(ob Observation) {
@@ -184,12 +182,11 @@ func writeOutput(ob Observation) {
 	svp := saturationVaporPressure(cTemp)
 	rhoSL := airDensity(cTemp, sp, svp, ob.HumidityAvg)
 	rhoT := airDensity(cTemp, inchesToMM(avgPres), svp, ob.HumidityAvg)
-	fmt.Printf("%s,%s,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
+	fmt.Printf("%s,%s,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
 		ob.StationID, ob.ObsTimeLocal,
 		ob.HumidityAvg, ob.IV.TempAvg, ob.WinddirAvg,
-		ob.IV.WindspeedAvg, ob.IV.WindgustAvg, ob.IV.DewptAvg,
-		ob.IV.WindchillAvg, ob.IV.HeatindexAvg,
-		ob.IV.PrecipRate, ob.IV.PrecipTotal, avgPres, rhoSL, rhoT)
+		ob.IV.WindspeedAvg, ob.IV.PrecipRate,
+		ob.IV.PrecipTotal, avgPres, rhoSL, rhoT)
 }
 
 func fahrenheitToCelcius(fTemp float64) float64 {

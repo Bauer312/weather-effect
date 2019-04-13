@@ -24,13 +24,20 @@ fontfamily: mathpazo
 fontsize: 11pt
 # spacing: double
 bibliography: weathereffect.bib
-biblio-style: apsr
 endnote: no
 ---
 
 # Introduction
 
-Our introduction is as follows...
+The density of the air affects the flight of the ball indirectly via drag forces and Magnus forces [@cross2011pbs, pp43-44] [@bahill2019sb, pp180-188].  The effects can be modeled with formulas already derived [@bahill2019sb, pp180-188].
+
+Regression analysis from available baseball data has shown that observed differences in the flight of the ball can be correlated with measured weather data [@kagan2017mlfb].  The quality of the weather data used thus far is much worse than the quality of the baseball data.  We have found ways to access weather data that should result in much better data quality.
+
+Regression analysis from available baseball data has shown that temperature affects players differently based on how active they are during the time that their team is on defense [@schifman2016cwpp].  Players that are more active do better in colder weather for reasons that may include muscle tightness, etc.
+
+Our more accurate weather data allows us to better model the differences in ball trajectories based on weather, and attempt to quantify how much of the difference is from the air density and how much is from the player.  This will allow us to generate a model that predicts the performance/distance of a batted ball if it were to have happened in another stadium at a specific time (assuming we have weather data for that time).  We will also be able to generate an approximation of how much better or worse a player might perform if they were playing in a different location - something that may prove useful to baseball scouts.
+
+(possible...) Use hour-by-hour weather data to adjust every at-bat; use that data to build a weather-independent ballpark factor, which will be used in openWAR calculations. The openWAR method will be amended to include a weather adjustment to each at-bat.
 
 # Data
 
@@ -40,11 +47,37 @@ The Baseball Savant site (https://baseballsavant.mlb.com) provides detailed pitc
 
 ### Weather Underground
 
-Weather Underground is a site (https://www.wunderground.com) that contains data for a number of "official" weather stations as well as ~250,000 personal weather stations from around the globe.  Each weather station has a unique identifying code in the Weather Underground system.  For example, weather station KMABROOK5 is at the corner of Beacon and Carlton St just a few blocks west of Fenway Park.  Weather station KMABOSTO55 is listed as at Fenway Park itself, but unfortunately attempts to query the Weather Underground API for data from this station was unsuccessful.  When viewing the dashboard for a weather station (https://www.wunderground.com/dashboard/pws/KMABROOK5), all data for that weather station for a particular day is loaded.  By looking at the format of the request made by the web browser, we can see how to query any weather station for any day.  The data is returned as a set of observations in the JSON format.  We have developed a tool that "flattens" these observations into a CSV format suitable for use in R.
+Weather Underground is a site (https://www.wunderground.com) that contains data for a number of "official" weather stations as well as ~250,000 personal weather stations from around the globe.  Each weather station has a unique identifying code in the Weather Underground system.  For example, weather station KMABROOK5 is at the corner of Beacon and Carlton St just a few blocks west of Fenway Park.  Weather station KMABOSTO55 is listed as at Fenway Park itself, but unfortunately attempts to query the Weather Underground API for data from this station was unsuccessful.  When viewing the dashboard for a weather station (https://www.wunderground.com/dashboard/pws/KMABROOK5), all data for that weather station for a particular day is loaded.  By looking at the format of the request made by the web browser, we can see how to query any weather station for any day.  The data is returned as a set of observations in the JSON format.  We have developed a tool that "flattens" these observations into a CSV format suitable for use in R.  An example of the raw observation data provided by Weather Underground is shown below:
+```json
+{
+  "stationID":"KCASANFR1213",
+  "tz":"America/Los_Angeles",
+  "obsTimeUtc":"2018-04-03T07:02:00Z",
+  "obsTimeLocal":"2018-04-03 00:02:00",
+  "epoch":1522738920000,
+  "lat":37.771065, "lon":-122.38821,
+  "solarRadiationHigh":0,
+  "uvHigh":0,
+  "winddirAvg":244,
+  "humidityHigh":77, "humidityLow":77, "humidityAvg":77,
+  "qcStatus":-1,
+  "imperial":{
+    "tempHigh":53, "tempLow":53, "tempAvg":53,
+    "windspeedHigh":4, "windspeedLow":4, "windspeedAvg":4,
+    "windgustHigh":6, "windgustLow":6, "windgustAvg":6,
+    "dewptHigh":46, "dewptLow":46, "dewptAvg":46,
+    "windchillHigh":null, "windchillLow":null, "windchillAvg":null,
+    "heatindexHigh":null, "heatindexLow":null, "heatindexAvg":null,
+    "pressureMax":29.58, "pressureMin":29.58, "pressureTrend":0.00,
+    "precipRate":0.00, "precipTotal":0.00
+  }
+}
+```
 
-Each weather station reports data to Weather Underground periodically.  However, each weather station is different in frequency and time between observations.  For many of the weather variables, the observation contains the minimum, maximum and average value of that variable over the time period since the prior observation.  For this reason, we have to use the average value of that variable as our data point for the range of time between observations.  The barometric pressure readings, on the other hand, only show a high and low value as well as the trend, but the trend is frequently empty.  We have decided to average the high and low values and use that.  Unfortunately, the barometric pressure is further complicated by the fact that there are multiple ways to report pressure (true pressure as observed at the station, sea level-corrected pressuere, or sea level-corrected pressure with past readings factored in) and each station reports in one of those ways without specifying which it is reporting.  The National Weather Service reports sea level-corrected pressure at airports, so we can compare the weather station value with the nearby airport value.  If the two values have a large and consistant difference between the two over time, we can reasonably guess that the station is reporting the true pressure and if not, assume that it is the sea level-corrected value.
+Each weather station reports data to Weather Underground periodically.  However, each weather station is different in frequency and time between observations.  For many of the weather variables, the observation contains the minimum, maximum and average value of that variable over the time period since the prior observation.  For this reason, we have to use the average value of that variable as our data point for the range of time between observations.  The barometric pressure readings, on the other hand, only show a high and low value as well as the trend, but the trend is frequently empty.  We have decided to average the high and low values and use that.  Unfortunately, the barometric pressure is further complicated by the fact that there are multiple ways to report pressure (true pressure as observed at the station, sea level-corrected pressuere, or sea level-corrected pressure with past readings factored in) and each station reports in one of those ways without specifying which it is reporting [@choosepws2012].  The National Weather Service reports sea level-corrected pressure at airports, so we can compare the weather station value with the nearby airport value.  If the two values have a large and consistant difference between the two over time, we can reasonably guess that the station is reporting the true pressure and if not, assume that it is the sea level-corrected value.
 
-The formula for calculating air density is described in @bahill2019sb180 and is an input to the ball trajectory code.  The three inputs to the calculation are the temperature, the humidity level, and the true station pressure (if provided with sea level-corrected pressure, it must be adjusted to true station pressure).
+The formula for calculating air density is described in @bahill2019sb [pp180-182] and is an input to the ball trajectory code.  The three inputs to the calculation are the temperature, the humidity level, and the true station pressure (if provided with sea level-corrected pressure, it must be adjusted to true station pressure).
+
 
 
 <!--
