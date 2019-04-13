@@ -132,8 +132,9 @@ func streamZip(path string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	var prev string
 	for _, ob := range obs.Obs {
-		validateObservationTime(ob)
+		prev = validateObservationTime(ob, prev)
 	}
 }
 
@@ -150,40 +151,51 @@ func streamJSON(path string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	var prev string
 	for _, ob := range obs.Obs {
-		validateObservationTime(ob)
+		prev = validateObservationTime(ob, prev)
 	}
 }
 
-func validateObservationTime(ob Observation) {
+func generateSVID(ob time.Time) string {
+	datePortion := ob.Format("060102")
+	timePortion := ob.Format("150405")
+	return fmt.Sprintf("%s_%s", datePortion, timePortion)
+}
+
+func validateObservationTime(ob Observation, previous string) string {
 	components := strings.Split(ob.ObsTimeLocal, " ")
 	timeComponents := strings.Split(components[1], ":")
 	hour, err := strconv.Atoi(timeComponents[0])
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	current := generateSVID(ob.ObsTimeUtc)
 	//Handle times that are from 10AM through 3AM
 	if hour > 9 || hour < 3 {
-		writeOutput(ob)
+		writeOutput(ob, previous, current)
 	}
+
+	return current
 }
 
 func writeOutputHeader() {
-	fmt.Printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-		"StationID", "LocalTime",
+	fmt.Printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+		"StationID", "LocalTime", "sv_id_beg", "sv_id_end",
 		"Humidity", "Temp", "WindDirAvg",
 		"Windspeed", "PrecipitationRate", "PrecipitationTotal",
 		"BarometricPressure", "AirDensitySL", "AirDensityT")
 }
-func writeOutput(ob Observation) {
+func writeOutput(ob Observation, beg string, end string) {
 	cTemp := fahrenheitToCelcius(ob.IV.TempAvg)
 	avgPres := (ob.IV.PressureMax + ob.IV.PressureMin) / 2.0
 	sp := stationPressure(cTemp, altitude[ob.StationID], avgPres)
 	svp := saturationVaporPressure(cTemp)
 	rhoSL := airDensity(cTemp, sp, svp, ob.HumidityAvg)
 	rhoT := airDensity(cTemp, inchesToMM(avgPres), svp, ob.HumidityAvg)
-	fmt.Printf("%s,%s,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
-		ob.StationID, ob.ObsTimeLocal,
+	fmt.Printf("%s,%s,%s,%s,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
+		ob.StationID, ob.ObsTimeLocal, beg, end,
 		ob.HumidityAvg, ob.IV.TempAvg, ob.WinddirAvg,
 		ob.IV.WindspeedAvg, ob.IV.PrecipRate,
 		ob.IV.PrecipTotal, avgPres, rhoSL, rhoT)
