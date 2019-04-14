@@ -157,12 +157,6 @@ func streamJSON(path string) {
 	}
 }
 
-func generateSVID(ob time.Time) string {
-	datePortion := ob.Format("060102")
-	timePortion := ob.Format("150405")
-	return fmt.Sprintf("%s_%s", datePortion, timePortion)
-}
-
 func validateObservationTime(ob Observation, previous string) string {
 	components := strings.Split(ob.ObsTimeLocal, " ")
 	timeComponents := strings.Split(components[1], ":")
@@ -171,7 +165,7 @@ func validateObservationTime(ob Observation, previous string) string {
 		log.Fatal(err)
 	}
 
-	current := generateSVID(ob.ObsTimeUtc)
+	current := ob.ObsTimeUtc.Format("20060102150405")
 	//Handle times that are from 10AM through 3AM
 	if hour > 9 || hour < 3 {
 		writeOutput(ob, previous, current)
