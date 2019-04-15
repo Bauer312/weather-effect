@@ -39,6 +39,9 @@ Our more accurate weather data allows us to better model the differences in ball
 
 (possible...) Use hour-by-hour weather data to adjust every at-bat; use that data to build a weather-independent ballpark factor, which will be used in openWAR calculations. The openWAR method will be amended to include a weather adjustment to each at-bat.
 
+The path of each hit will be transfered from one stadium to another through the use of the unique variables of air density, gravitational acceleration due to elevation, as well as the wind speed and direction at the time of the pitch.  The change in change in the distance the ball would travel will be what is primarily what will be looked at however, the change in the height the ball reaches as well as if it is pushed horizonally could also be explored.  By exmaining this there is the potential to find advantages weather conditions for a batter.  Examining how a pitches pitches are affected by the weather may also be looked at using the same variables.
+
+
 # Data
 
 ## MLB Baseball Savant
