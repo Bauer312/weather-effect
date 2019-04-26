@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+sleep 15
+
 curl -H "Accept: application/json, text/plain, */*" \
 -H "Origin: https://www.wunderground.com" \
 -H "Accept-Encoding: br, gzip, deflate" \
 -H "Host: api.weather.com" \
--H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Safari/605.1.15" \
+-H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4)" \
 -H "Accept-Language: en-us" \
 -H "Referer: https://www.wunderground.com/" \
 -o ../$1/$2.gz \
