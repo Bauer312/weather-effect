@@ -18,6 +18,7 @@ Combine all the team CSV files into a single file that covers the entire season 
 func main() {
 	inputDir := flag.String("in", "", "Input directory containing data files")
 	outputFile := flag.String("out", "", "Output File")
+	outputAll := flag.Bool("all", false, "Print all records to output file")
 
 	flag.Parse()
 
@@ -31,10 +32,10 @@ func main() {
 	}
 	defer outFP.Close()
 
-	walkDir(*inputDir, outFP, 5, true)
+	walkDir(*inputDir, outFP, 5, true, *outputAll)
 }
 
-func walkDir(path string, output *os.File, level int, printHeader bool) {
+func walkDir(path string, output *os.File, level int, printHeader, printAll bool) {
 	fp, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -48,10 +49,10 @@ func walkDir(path string, output *os.File, level int, printHeader bool) {
 	rowCount := 0
 	for _, element := range elements {
 		if element.IsDir() == true {
-			walkDir(filepath.Join(path, element.Name()), output, level-1, printHeader)
+			walkDir(filepath.Join(path, element.Name()), output, level-1, printHeader, printAll)
 		} else {
 			if strings.HasSuffix(element.Name(), ".csv") {
-				rowCount += processCSVFile(filepath.Join(path, element.Name()), output, printHeader)
+				rowCount += processCSVFile(filepath.Join(path, element.Name()), output, printHeader, printAll)
 				printHeader = false
 			}
 		}
@@ -59,7 +60,7 @@ func walkDir(path string, output *os.File, level int, printHeader bool) {
 	fmt.Printf("Total rows: %d\n", rowCount)
 }
 
-func processCSVFile(path string, output *os.File, printHeader bool) int {
+func processCSVFile(path string, output *os.File, printHeader, printAll bool) int {
 	fp, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -98,20 +99,21 @@ func processCSVFile(path string, output *os.File, printHeader bool) int {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		if record[21] == "X" {
-			rowCount++
-			if record[svIdx] == "null" {
-				record[39] = "null"
-				record[40] = "null"
-			} else {
-				comp := strings.Split(record[svIdx], "_")
-				record[39] = "20" + comp[0]
-				record[40] = comp[1]
-			}
-
+		rowCount++
+		if record[svIdx] == "null" {
+			record[39] = "null"
+			record[40] = "null"
+		} else {
+			comp := strings.Split(record[svIdx], "_")
+			record[39] = "20" + comp[0]
+			record[40] = comp[1]
+		}
+		if printAll == true {
 			cW.Write(record)
-
+		} else {
+			if record[21] == "X" {
+				cW.Write(record)
+			}
 		}
 	}
 
