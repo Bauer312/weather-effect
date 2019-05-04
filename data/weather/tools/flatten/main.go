@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"compress/gzip"
 	"encoding/json"
 	"flag"
@@ -9,9 +8,7 @@ import (
 	"log"
 	"math"
 	"os"
-	"path"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -74,9 +71,9 @@ type ObservationSet struct {
 }
 
 var (
-	inputDirectory = flag.String("dir", "", "Location of directory containing weather data")
-	outputPath     string
-	altitude       map[string]float64
+	inputDirectory = flag.String("in", "", "Location of directory containing weather data")
+	outputPath     = flag.String("out", "", "Location of output")
+	altitude       = flag.Int("alt", 0, "Altitude in feet")
 )
 
 func main() {
@@ -86,12 +83,18 @@ func main() {
 		flag.Usage()
 	}
 
-	populateAltitude(*inputDirectory)
-	writeOutputHeader()
-	walkDir(*inputDirectory, 5)
+	fp, err := os.Create(*outputPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	writeOutputHeader(fp)
+	walkDir(fp, *inputDirectory, 5)
+
+	fp.Close()
 }
 
-func walkDir(path string, level int) {
+func walkDir(outfp *os.File, path string, level int) {
 	fp, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -103,18 +106,20 @@ func walkDir(path string, level int) {
 	}
 	for _, element := range elements {
 		if element.IsDir() == true {
-			walkDir(filepath.Join(path, element.Name()), level-1)
+			walkDir(outfp, filepath.Join(path, element.Name()), level-1)
 		} else {
 			if strings.HasSuffix(element.Name(), ".gz") {
-				streamZip(filepath.Join(path, element.Name()))
+				streamZip(outfp, filepath.Join(path, element.Name()))
 			} else if strings.HasSuffix(element.Name(), ".json") {
-				streamJSON(filepath.Join(path, element.Name()))
+				streamJSON(outfp, filepath.Join(path, element.Name()))
+			} else {
+				streamJSON(outfp, filepath.Join(path, element.Name()))
 			}
 		}
 	}
 }
 
-func streamZip(path string) {
+func streamZip(outfp *os.File, path string) {
 	fp, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -132,13 +137,12 @@ func streamZip(path string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var prev string
 	for _, ob := range obs.Obs {
-		prev = validateObservationTime(ob, prev)
+		validateObservationTime(outfp, ob)
 	}
 }
 
-func streamJSON(path string) {
+func streamJSON(outfp *os.File, path string) {
 	fp, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -151,48 +155,29 @@ func streamJSON(path string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var prev string
 	for _, ob := range obs.Obs {
-		prev = validateObservationTime(ob, prev)
+		validateObservationTime(outfp, ob)
 	}
 }
 
-func validateObservationTime(ob Observation, previous string) string {
-	components := strings.Split(ob.ObsTimeLocal, " ")
-	timeComponents := strings.Split(components[1], ":")
-	hour, err := strconv.Atoi(timeComponents[0])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	current := ob.ObsTimeUtc.Format("20060102150405")
-	//Handle times that are from 10AM through 3AM
-	if hour > 9 || hour < 3 {
-		writeOutput(ob, previous, current)
-	}
-
-	return current
+func validateObservationTime(fp *os.File, ob Observation) {
+	writeOutput(fp, ob, ob.ObsTimeUtc.Format("20060102"), ob.ObsTimeUtc.Format("150405"))
 }
 
-func writeOutputHeader() {
-	fmt.Printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-		"StationID", "LocalTime", "sv_id_beg", "sv_id_end",
-		"Humidity", "Temp", "WindDirAvg",
-		"Windspeed", "PrecipitationRate", "PrecipitationTotal",
-		"BarometricPressure", "AirDensitySL", "AirDensityT")
+func writeOutputHeader(fp *os.File) {
+	fmt.Fprintf(fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+		"StationID", "LocalTime", "sv_id_dt", "sv_id_tm",
+		"Humidity", "Temp_C", "WindDirAvg",
+		"Windspeed",
+		"BarometricPressure_mmHg", "Altitude")
 }
-func writeOutput(ob Observation, beg string, end string) {
+func writeOutput(fp *os.File, ob Observation, dt, tm string) {
 	cTemp := fahrenheitToCelcius(ob.IV.TempAvg)
 	avgPres := (ob.IV.PressureMax + ob.IV.PressureMin) / 2.0
-	sp := stationPressure(cTemp, altitude[ob.StationID], avgPres)
-	svp := saturationVaporPressure(cTemp)
-	rhoSL := airDensity(cTemp, sp, svp, ob.HumidityAvg)
-	rhoT := airDensity(cTemp, inchesToMM(avgPres), svp, ob.HumidityAvg)
-	fmt.Printf("%s,%s,%s,%s,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
-		ob.StationID, ob.ObsTimeLocal, beg, end,
-		ob.HumidityAvg, ob.IV.TempAvg, ob.WinddirAvg,
-		ob.IV.WindspeedAvg, ob.IV.PrecipRate,
-		ob.IV.PrecipTotal, avgPres, rhoSL, rhoT)
+	fmt.Fprintf(fp, "%s,%s,%s,%v,%v,%v,%v,%v,%v,%v\n",
+		ob.StationID, ob.ObsTimeLocal, dt, tm,
+		ob.HumidityAvg, cTemp, ob.WinddirAvg,
+		ob.IV.WindspeedAvg, avgPres, *altitude)
 }
 
 func fahrenheitToCelcius(fTemp float64) float64 {
@@ -225,24 +210,4 @@ func airDensity(cTemp, airPres, svp, hum float64) float64 {
 func stationPressure(cTemp, alt, bar float64) float64 {
 	pVal := (-9.80665 * 0.289644 * feetToMeter(alt)) / (8.31447 * (cTemp + 273.15))
 	return inchesToMM(bar) * math.Pow(math.E, pVal)
-}
-
-func populateAltitude(dir string) {
-	filePath := path.Join(dir, "altitude.dat")
-	fp, err := os.Open(filePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fp.Close()
-	altitude = make(map[string]float64)
-
-	sc := bufio.NewScanner(fp)
-	for sc.Scan() {
-		comp := strings.Split(sc.Text(), ",")
-		fv, err := strconv.ParseFloat(comp[1], 64)
-		if err != nil {
-			log.Fatal(err)
-		}
-		altitude[comp[0]] = fv
-	}
 }

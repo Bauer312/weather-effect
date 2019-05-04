@@ -26,11 +26,16 @@ ip_col <- ip_func("COL",-6)
 ip_tex <- ip_func("TEX",-5)
 ip_atl <- ip_func("ATL",-4)
 ip_sd <- ip_func("SD",-7)
+ip_sf <- ip_func("SF",-7)
 ip_stl <- ip_func("STL",-5)
 ip_min <- ip_func("MIN",-5)
 ip_mia <- ip_func("MIA",-4)
 ip_phi <- ip_func("PHI",-4)
 ip_lad <- ip_func("LAD",-7)
+ip_cws <- ip_func("CWS",-5)
+ip_chc <- ip_func("CHC",-5)
+ip_hou <- ip_func("HOU",-5)
+ip_kc <- ip_func("KC",-5)
 
 wx_bal <- read_csv("BaltimoreNOAA.csv")  # MARYLAND SCIENCE CENTER ==> 0.591354 miles from stadium
 wx_bos <- read_csv("BostonNOAA.csv")  # BOSTON ==> 4.594463 miles from stadium
@@ -54,6 +59,43 @@ wx_lad <- read_csv("LosAngelesDodgersNOAA.csv")  # LOS ANGELES DOWNTOWN USC ==> 
 fm15 <- function(wx_orig) {
   wx_orig %>% filter(report_type == "FM-15") %>% mutate(play_minutes = as.numeric(sv_time))
 }
+wx2_sf <- read_csv("sf.csv") %>% filter(Humidity > 0) %>%
+  mutate(play_minutes = floor(as.numeric(sv_id_tm) / 1000)*1000,
+         pressure_mmhg = BarometricPressure_mmHg * 25.4,
+         sv_date = sv_id_dt, humidity_percent = Humidity,
+         temp_celcius = Temp_C, wind_direction = WindDirAvg,
+         wind_speed_meters_per_second = Windspeed * 0.44704)
+wx2_kc <- read_csv("kc.csv") %>% filter(Humidity > 0) %>%
+  mutate(play_minutes = floor(as.numeric(sv_id_tm) / 1000)*1000,
+         pressure_mmhg = BarometricPressure_mmHg * 25.4,
+         sv_date = sv_id_dt, humidity_percent = Humidity,
+         temp_celcius = Temp_C, wind_direction = WindDirAvg,
+         wind_speed_meters_per_second = Windspeed * 0.44704)
+wx2_cws <- read_csv("whitesox.csv") %>% filter(Humidity > 0) %>%
+  mutate(play_minutes = floor(as.numeric(sv_id_tm) / 1000)*1000,
+         pressure_mmhg = BarometricPressure_mmHg * 25.4,
+         sv_date = sv_id_dt, humidity_percent = Humidity,
+         temp_celcius = Temp_C, wind_direction = WindDirAvg,
+         wind_speed_meters_per_second = Windspeed * 0.44704)
+wx2_chc <- read_csv("cubs.csv") %>% filter(Humidity > 0) %>%
+  mutate(play_minutes = floor(as.numeric(sv_id_tm) / 1000)*1000,
+         pressure_mmhg = BarometricPressure_mmHg * 25.4,
+         sv_date = sv_id_dt, humidity_percent = Humidity,
+         temp_celcius = Temp_C, wind_direction = WindDirAvg,
+         wind_speed_meters_per_second = Windspeed * 0.44704)
+wx2_col2 <- read_csv("den.csv") %>% filter(Humidity > 0) %>%
+  mutate(play_minutes = floor(as.numeric(sv_id_tm) / 1000)*1000,
+         pressure_mmhg = BarometricPressure_mmHg * 25.4,
+         sv_date = sv_id_dt, humidity_percent = Humidity,
+         temp_celcius = Temp_C, wind_direction = WindDirAvg,
+         wind_speed_meters_per_second = Windspeed * 0.44704)
+wx2_hou <- read_csv("hou.csv") %>% filter(Humidity > 0) %>%
+  mutate(play_minutes = floor(as.numeric(sv_id_tm) / 1000)*1000,
+         pressure_mmhg = BarometricPressure_mmHg * 25.4,
+         sv_date = sv_id_dt, humidity_percent = Humidity,
+         temp_celcius = Temp_C, wind_direction = WindDirAvg,
+         wind_speed_meters_per_second = Windspeed * 0.44704)
+
 
 wx2_bal <- fm15(wx_bal)
 wx2_bos <- fm15(wx_bos)
@@ -75,7 +117,9 @@ wx2_phi <- fm15(wx_phi)
 wx2_lad <- fm15(wx_lad)
 
 join_wx <- function(team_plays,team_wx) {
-  team_plays %>% left_join(team_wx,by=c("sv_date"="sv_date","play_minutes"="play_minutes"))
+  team_plays %>%
+    left_join(team_wx,by=c("sv_date"="sv_date","play_minutes"="play_minutes")) %>%
+    filter(pressure_mmhg > 0)
 }
 
 bal_wx <- join_wx(ip_bal,wx2_bal)
@@ -96,6 +140,11 @@ min_wx <- join_wx(ip_min,wx2_min)
 mia_wx <- join_wx(ip_mia,wx2_mia)
 phi_wx <- join_wx(ip_phi,wx2_phi)
 lad_wx <- join_wx(ip_lad,wx2_lad)
+sf_wx <- join_wx(ip_sf,wx2_sf)
+kc_wx <- join_wx(ip_kc,wx2_kc)
+cws_wx <- join_wx(ip_cws,wx2_cws)
+chc_wx <- join_wx(ip_chc,wx2_chc)
+hou_wx <- join_wx(ip_hou,wx2_hou)
 
 
 svp <- function(temp_celcius) {
@@ -164,6 +213,78 @@ phi_wx2 <- phi_wx %>% mutate(air_density = air_density(temp_celcius,
 lad_wx2 <- lad_wx %>% mutate(air_density = air_density(temp_celcius,
                                                        air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
                                                        svp(temp_celcius),humidity_percent))
+chc_wx2 <- chc_wx %>% mutate(air_density = air_density(temp_celcius,
+                                                       air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
+                                                       svp(temp_celcius),humidity_percent))
+cws_wx2 <- cws_wx %>% mutate(air_density = air_density(temp_celcius,
+                                                       air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
+                                                       svp(temp_celcius),humidity_percent))
+hou_wx2 <- hou_wx %>% mutate(air_density = air_density(temp_celcius,
+                                                       air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
+                                                       svp(temp_celcius),humidity_percent))
+sf_wx2 <- sf_wx %>% mutate(air_density = air_density(temp_celcius,
+                                                       air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
+                                                       svp(temp_celcius),humidity_percent))
+kc_wx2 <- kc_wx %>% mutate(air_density = air_density(temp_celcius,
+                                                       air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
+                                                       svp(temp_celcius),humidity_percent))
+
+final_columns <- function(joined_table) {
+  joined_table %>% select(pitch_type,game_date,batter,stand,pitcher,player_name,events,
+                          description,home_team,away_team,hit_location,bb_type,inning,
+                          inning_topbot,hit_distance_sc,launch_speed,launch_angle,
+                          launch_speed_angle,at_bat_number,pitch_number,pitch_name,
+                          des,play_date,month,play_time,stadium,elevation_ft,
+                          wind_direction, wind_speed_meters_per_second,
+                          pressure_mmhg,temp_celcius,air_density)
+}
+
+KC <- final_columns(kc_wx2)
+MIA <- final_columns(mia_wx2)
+BAL <- final_columns(bal_wx2)
+BOS <- final_columns(bos_wx2)
+NYY <- final_columns(nyy_wx2)
+CLE <- final_columns(cle_wx2)
+DET <- final_columns(det_wx2)
+OAK <- final_columns(oak_wx2)
+SEA <- final_columns(sea_wx2)
+TEX <- final_columns(tex_wx2)
+ATL <- final_columns(atl_wx2)
+NYM <- final_columns(nym_wx2)
+WAS <- final_columns(was_wx2)
+COL <- final_columns(col_wx2)
+SD <- final_columns(sd_wx2)
+STL <- final_columns(stl_wx2)
+MIN <- final_columns(min_wx2)
+PHI <- final_columns(phi_wx2)
+LAD <- final_columns(lad_wx2)
+SF <- final_columns(sf_wx2)
+CWS <- final_columns(cws_wx2)
+CHC <- final_columns(chc_wx2)
+HOU <- final_columns(hou_wx2)
+
+
+# Input
+# corner of home plate z-axis = height y-axis = line between home plate and 2nd base  x-axis perpendicular to other axis 
+# x0		= (ft)   horizontal distance from center of home plate
+# y0		= (ft)   distance from corner of home plate on y-axis   may assume middle of plate or half length of home plate
+# z0		= (ft)   vertical distance from ground
+# v0 		= (ft/s) exit speed
+# sign  	= 1 if righty and -1 if lefty
+# theta 	= (deg) launch angle
+# r 		= (ft) total disatance traveled by by ball from home plate that you want to know the height (z) at 
+# phi 	= (deg) the angle between the y-axis (line from 2nd base to home) and the line from the final location and home plate
+# temp 	= (C) temperature
+# pressure 	= (mmg) barometric pressure
+# RH 		= (%) relative humidity
+# elev 	= (ft) elevation
+# vwind 	= (mph) velocity of wind
+# phiwind 	= (deg) angle of wind  runs along y-axis   need to account for which direction stadium is facing and use to get wind direction
+
+# traj <- function(x0,y0,z0,v0,sign,theta,r,phi1,temp,pressure,RH,elev,vwind,phiwind){
+
+
+
 
 
 all_wx2 <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
