@@ -3,7 +3,9 @@ library(tidyverse)
 setwd("/Users/brian/dev/github.com/weather-effect/data/BrianWorking/")
 #setwd("F:\\Baseball")
 
-ip_selected_teams <- read_csv("selected_home_teams.csv")
+#ip_selected_teams <- read_csv("selected_home_teams.csv")
+#ip_selected_teams %>% saveRDS("ip_selected_teams.rds")
+ip_selected_teams <- readRDS("ip_selected_teams.rds")
 
 ip_func <- function(team_name,tz_offset) {
   ip_selected_teams %>% filter(home_team == team_name) %>%
@@ -57,7 +59,8 @@ wx_phi <- read_csv("PhiladelphiaNOAA.csv")  # PHILADELPHIA INTERNATIONAL AIRPORT
 wx_lad <- read_csv("LosAngelesDodgersNOAA.csv")  # LOS ANGELES DOWNTOWN USC ==> 4.532504 miles from stadium
 
 fm15 <- function(wx_orig) {
-  wx_orig %>% filter(report_type == "FM-15") %>% mutate(play_minutes = as.numeric(sv_time))
+  wx_orig %>% filter(report_type == "FM-15", humidity_percent > 0, humidity_percent < 100) %>%
+    mutate(play_minutes = as.numeric(sv_time))
 }
 wx2_sf <- read_csv("sf.csv") %>% filter(Humidity > 0) %>%
   mutate(play_minutes = floor(as.numeric(sv_id_tm) / 1000)*1000,
@@ -234,7 +237,8 @@ final_columns <- function(joined_table) {
                           description,home_team,away_team,hit_location,bb_type,inning,
                           inning_topbot,hit_distance_sc,launch_speed,launch_angle,
                           launch_speed_angle,at_bat_number,pitch_number,pitch_name,
-                          des,play_date,month,play_time,stadium,elevation_ft,
+                          plate_x,plate_z,humidity_percent,des,
+                          play_date,month,hour,play_time,stadium,elevation_ft,
                           wind_direction, wind_speed_meters_per_second,
                           pressure_mmhg,temp_celcius,air_density)
 }
@@ -262,7 +266,9 @@ SF <- final_columns(sf_wx2)
 CWS <- final_columns(cws_wx2)
 CHC <- final_columns(chc_wx2)
 HOU <- final_columns(hou_wx2)
-
+save(KC, MIA,BAL,BOS,NYY,CLE,DET,OAK,SEA,ATL,
+     NYM,WAS,COL,SD,STL,MIN,PHI,LAD,SF,CWS,CHC,HOU,
+     file="../Teams.RData")
 
 # Input
 # corner of home plate z-axis = height y-axis = line between home plate and 2nd base  x-axis perpendicular to other axis 
@@ -287,10 +293,10 @@ HOU <- final_columns(hou_wx2)
 
 
 
-all_wx2 <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
-                 col_wx2,bos_wx2,nyy_wx2,det_wx2,sea_wx2,
-                 tex_wx2,atl_wx2,sd_wx2,stl_wx2,min_wx2,
-                 mia_wx2,phi_wx2,lad_wx2) %>%
+all_wx2 <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                 COL,BOS,NYY,DET,SEA,KC,
+                 CHC,ATL,SD,STL,MIN,HOU,
+                 MIA,PHI,LAD,CWS) %>%
   filter(air_density > 0 & air_density < 5,
          as.numeric(hit_distance_sc) > 200,
          humidity_percent > 0 & humidity_percent < 101,
@@ -300,10 +306,10 @@ all_wx2 <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
          l_speed = as.numeric(launch_speed))
 
 
-all_wx2_nohit <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
-                       col_wx2,bos_wx2,nyy_wx2,det_wx2,sea_wx2,
-                       tex_wx2,atl_wx2,sd_wx2,stl_wx2,min_wx2,
-                       mia_wx2,phi_wx2,lad_wx2) %>%
+all_wx2_nohit <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                       COL,BOS,NYY,DET,SEA,KC,
+                       CHC,ATL,SD,STL,MIN,HOU,
+                       MIA,PHI,LAD,CWS) %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
          bb_type != 'ground_ball') %>%
@@ -311,10 +317,10 @@ all_wx2_nohit <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
          l_angle = as.numeric(launch_angle),
          l_speed = as.numeric(launch_speed))
 
-data_nostl <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
-                    col_wx2,bos_wx2,nyy_wx2,det_wx2,sea_wx2,
-                    tex_wx2,atl_wx2,sd_wx2,min_wx2,
-                    mia_wx2,phi_wx2,lad_wx2) %>%
+data_nostl <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                    COL,BOS,NYY,DET,SEA,KC,
+                    CHC,ATL,SD,MIN,HOU,
+                    MIA,PHI,LAD,CWS) %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
          bb_type != 'ground_ball',
@@ -323,7 +329,7 @@ data_nostl <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
          l_angle = as.numeric(launch_angle),
          l_speed = as.numeric(launch_speed)) %>%
   filter(l_angle > 0,distance > 0)
-data_stl <- stl_wx2 %>%
+data_stl <- STL %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
          bb_type != 'ground_ball',
@@ -336,6 +342,17 @@ data_stl <- stl_wx2 %>%
 #all_wx2 %>% write_csv("all_wx2.csv")
 
 july_afternoon <- all_wx2_nohit %>% filter(month == 7, hour > 11 & hour < 16) %>% group_by(home_team) %>% summarise(avg = median(air_density))
+
+july_cmp <- all_wx2_nohit %>% filter(month == 7) %>% group_by(home_team) %>% summarise(ad = mean(air_density), at = mean(temp_celcius))
+pairs(july_cmp[,c(2:3)], lower.panel = NULL)
+all_cmp <- all_wx2_nohit %>% group_by(play_date,home_team) %>%
+  summarise(density = mean(air_density),
+            temp = mean(temp_celcius),
+            humidity = mean(humidity_percent),
+            pressure = mean(pressure_mmhg))
+pairs(all_cmp[,c(3:6)], lower.panel = NULL)
+
+
 august_afternoon <- all_wx2_nohit %>% filter(month == 8, hour > 11 & hour < 16) %>% group_by(home_team) %>% summarise(avg = median(air_density))
 july_evening <- all_wx2_nohit %>% filter(month == 7, hour > 16 & hour < 21) %>% group_by(home_team) %>% summarise(avg = median(air_density))
 august_evening <- all_wx2_nohit %>% filter(month == 8, hour > 16 & hour < 21) %>% group_by(home_team) %>% summarise(avg = median(air_density))
@@ -354,10 +371,10 @@ data_stl$est <- predict(lm( distance ~ l_angle+l_speed+air_density, data=data_no
 
 
 # Predict Home Run Distance in St Louis
-data_nostl <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
-                    col_wx2,bos_wx2,nyy_wx2,det_wx2,sea_wx2,
-                    tex_wx2,atl_wx2,sd_wx2,min_wx2,
-                    mia_wx2,phi_wx2,lad_wx2) %>%
+data_nostl <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                    COL,BOS,NYY,DET,SEA,KC,
+                    CHC,ATL,SD,MIN,HOU,
+                    MIA,PHI,LAD,CWS) %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
          events == 'home_run') %>%
@@ -365,7 +382,7 @@ data_nostl <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
          l_angle = as.numeric(launch_angle),
          l_speed = as.numeric(launch_speed)) %>%
   filter(l_angle > 0,distance > 0)
-data_stl <- stl_wx2 %>%
+data_stl <- STL %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
          events == 'home_run') %>%
@@ -380,10 +397,10 @@ pairs(data_stl[,c(47:51)], lower.panel = NULL)
 
 
 # Home Runs per game by air density
-all_hr <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
-                col_wx2,bos_wx2,nyy_wx2,det_wx2,sea_wx2,
-                tex_wx2,atl_wx2,sd_wx2,stl_wx2,min_wx2,
-                mia_wx2,phi_wx2,lad_wx2) %>%
+all_hr <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                COL,BOS,NYY,DET,SEA,KC,
+                CHC,ATL,SD,STL,MIN,HOU,
+                MIA,PHI,LAD,CWS) %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
          events == 'home_run') %>% mutate(density_bucket = case_when(air_density < 1.0 ~ 1,
@@ -395,10 +412,10 @@ all_hr <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
 avg_per_game <- all_hr %>% group_by(density_bucket,home_team,game_date) %>% summarise(hrs = length(game_date)) %>% group_by(density_bucket) %>% summarise(hr_per_game = mean(hrs))
 
 # Average fly ball distance by air density
-all_fly_ball <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
-                      col_wx2,bos_wx2,nyy_wx2,det_wx2,sea_wx2,
-                      tex_wx2,atl_wx2,sd_wx2,stl_wx2,min_wx2,
-                      mia_wx2,phi_wx2,lad_wx2) %>%
+all_fly_ball <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                      COL,BOS,NYY,DET,SEA,KC,
+                      CHC,ATL,SD,STL,MIN,HOU,
+                      MIA,PHI,LAD,CWS) %>%
   mutate(distance = as.numeric(hit_distance_sc)) %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
@@ -420,10 +437,10 @@ ggplot(all_fly_ball, aes(x=air_density,y=distance)) +
   scale_y_continuous("Fly Ball Distance",limits=c(175,525))
 
 # Average line drive distance by air density
-all_line_drive <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
-                        col_wx2,bos_wx2,nyy_wx2,det_wx2,sea_wx2,
-                        tex_wx2,atl_wx2,sd_wx2,stl_wx2,min_wx2,
-                        mia_wx2,phi_wx2,lad_wx2) %>%
+all_line_drive <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                        COL,BOS,NYY,DET,SEA,KC,
+                        CHC,ATL,SD,STL,MIN,HOU,
+                        MIA,PHI,LAD,CWS) %>%
   mutate(distance = as.numeric(hit_distance_sc)) %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
@@ -445,10 +462,10 @@ ggplot(all_line_drive, aes(x=air_density,y=distance)) +
   scale_y_continuous("Line Drive Distance",limits=c(25,500))
 
 # Average home run distance by air density
-all_home_run <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
-                      col_wx2,bos_wx2,nyy_wx2,det_wx2,sea_wx2,
-                      tex_wx2,atl_wx2,sd_wx2,stl_wx2,min_wx2,
-                      mia_wx2,phi_wx2,lad_wx2) %>%
+all_home_run <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                      COL,BOS,NYY,DET,SEA,KC,
+                      CHC,ATL,SD,STL,MIN,HOU,
+                      MIA,PHI,LAD,CWS) %>%
   mutate(distance = as.numeric(hit_distance_sc)) %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
@@ -470,7 +487,8 @@ ggplot(all_home_run, aes(x=air_density,y=distance)) +
 
 avg_home_run <- all_home_run %>% group_by(density_bucket) %>% summarise(avg_hr_distance = mean(distance))
 
-density_bucket <- avg_per_game %>% left_join(avg_home_run) %>% left_join(avg_fly_ball) %>% left_join(avg_line_drive)
+density_bucket <- avg_per_game %>% left_join(avg_home_run) %>% 
+  left_join(avg_fly_ball) %>% left_join(avg_line_drive)
 
 ggplot(density_bucket, aes(density_bucket, hr_per_game)) + 
   geom_line()
@@ -482,10 +500,10 @@ ggplot(density_bucket, aes(density_bucket, avg_ld_distance)) +
   geom_line()
 
 # Average hard-hit fly ball distance by air density
-all_fly_ball_hh <- rbind(bal_wx2,was_wx2,oak_wx2,cle_wx2,nym_wx2,
-                         col_wx2,bos_wx2,nyy_wx2,det_wx2,sea_wx2,
-                         tex_wx2,atl_wx2,sd_wx2,stl_wx2,min_wx2,
-                         mia_wx2,phi_wx2,lad_wx2) %>%
+all_fly_ball_hh <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                         COL,BOS,NYY,DET,SEA,KC,
+                         CHC,ATL,SD,STL,MIN,HOU,
+                         MIA,PHI,LAD,CWS) %>%
   mutate(distance = as.numeric(hit_distance_sc)) %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
@@ -505,4 +523,75 @@ ggplot(all_fly_ball_hh, aes(x=air_density,y=distance)) +
   geom_smooth() +
   scale_x_continuous("Air Density",limits=c(0.95,1.3)) +
   scale_y_continuous("Fly Ball Distance",limits=c(175,525))
+
+b_order <- BAL %>%
+  select(play_date,play_time,humidity_percent,pressure_mmhg,temp_celcius,air_density) %>%
+  arrange(play_date,play_time)
+
+
+plot_avg_density <- function(team) {
+  ggplot(team %>% group_by(play_date) %>% summarise(m = mean(air_density)), aes(play_date, m)) + 
+    geom_line() +
+    geom_smooth()
+}
+plot_sd_density <- function(team) {
+  ggplot(team %>% group_by(play_date) %>% summarise(s = sd(air_density)), aes(play_date, s)) + 
+    geom_line() +
+    geom_smooth()
+}
+
+# plot_avg_density()
+plot_avg_density(BAL)
+plot_avg_density(STL)
+plot_avg_density(CHC)
+plot_avg_density(HOU)
+plot_avg_density(SEA)
+plot_avg_density(SD)
+plot_avg_density(KC)
+plot_avg_density(MIA)
+plot_avg_density(BOS)
+plot_avg_density(NYY)
+plot_avg_density(CLE)
+plot_avg_density(DET)
+plot_avg_density(OAK)
+plot_avg_density(ATL)
+plot_avg_density(NYM)
+plot_avg_density(WAS)
+plot_avg_density(COL)
+plot_avg_density(MIN)
+plot_avg_density(PHI)
+plot_avg_density(LAD)
+plot_avg_density(SF)
+plot_avg_density(CWS)
+
+# plot_sd_density()
+plot_sd_density(BAL)
+plot_sd_density(STL)
+plot_sd_density(CHC)
+plot_sd_density(HOU)
+plot_sd_density(SEA)
+plot_sd_density(SD)
+plot_sd_density(KC)
+plot_sd_density(MIA)
+plot_sd_density(BOS)
+plot_sd_density(NYY)
+plot_sd_density(CLE)
+plot_sd_density(DET)
+plot_sd_density(OAK)
+plot_sd_density(ATL)
+plot_sd_density(NYM)
+plot_sd_density(WAS)
+plot_sd_density(COL)
+plot_sd_density(MIN)
+plot_sd_density(PHI)
+plot_sd_density(LAD)
+plot_sd_density(SF)
+plot_sd_density(CWS)
+
+ggplot(BAL, aes(play_date)) + 
+  geom_line(aes(y = humidity_percent / 20, colour = "humidity_percent")) +
+  geom_line(aes(y = temp_celcius / 2, colour = "temp_celcius")) +
+  geom_line(aes(y = air_density, colour = "air_density")) +
+  geom_line(aes(y = pressure_mmhg / 50, colour = "pressure_mmhg"))
+
 
