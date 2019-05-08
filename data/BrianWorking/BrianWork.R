@@ -124,11 +124,32 @@ join_wx <- function(team_plays,team_wx) {
     left_join(team_wx,by=c("sv_date"="sv_date","play_minutes"="play_minutes")) %>%
     filter(pressure_mmhg > 0)
 }
+join_wx2 <- function(team_plays,team_wx) {
+  team_wx %>%
+    left_join(team_plays,by=c("sv_date"="sv_date","play_minutes"="play_minutes")) %>%
+    filter(pressure_mmhg > 0)
+}
 
 bal_wx <- join_wx(ip_bal,wx2_bal)
+bal_wx_all <- join_wx2(ip_bal,wx2_bal) %>%
+  mutate(elevation_ft = 36) %>%
+  filter(humidity_percent < 100 & humidity_percent > 0)
+
 bos_wx <- join_wx(ip_bos,wx2_bos)
+bos_wx_all <- join_wx2(ip_bos,wx2_bos) %>%
+  mutate(elevation_ft = 16) %>%
+  filter(humidity_percent < 100 & humidity_percent > 0)
+
 nyy_wx <- join_wx(ip_nyy,wx2_nyy)
+nyy_wx_all <- join_wx2(ip_nyy,wx2_nyy) %>%
+  mutate(elevation_ft = 33) %>%
+  filter(humidity_percent < 100 & humidity_percent > 0)
+
 cle_wx <- join_wx(ip_cle,wx2_cle)
+cle_wx_all <- join_wx2(ip_cle,wx2_cle) %>%
+  mutate(elevation_ft = 653) %>%
+  filter(humidity_percent < 100 & humidity_percent > 0)
+
 det_wx <- join_wx(ip_det,wx2_det)
 oak_wx <- join_wx(ip_oak,wx2_oak)
 sea_wx <- join_wx(ip_sea,wx2_sea)
@@ -165,6 +186,10 @@ air_density <- function(temp_celcius,air_pressure_mmHg,svp_mmHg,humidity_percent
 bal_wx2 <- bal_wx %>% mutate(air_density = air_density(temp_celcius,
                                                        air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
                                                        svp(temp_celcius),humidity_percent))
+bal_wx2_all <- bal_wx_all %>% mutate(air_density = air_density(temp_celcius,
+                                                       air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
+                                                       svp(temp_celcius),humidity_percent))
+
 was_wx2 <- was_wx %>% mutate(air_density = air_density(temp_celcius,
                                                        air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
                                                        svp(temp_celcius),humidity_percent))
@@ -174,6 +199,10 @@ oak_wx2 <- oak_wx %>% mutate(air_density = air_density(temp_celcius,
 cle_wx2 <- cle_wx %>% mutate(air_density = air_density(temp_celcius,
                                                        air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
                                                        svp(temp_celcius),humidity_percent))
+cle_wx2_all <- cle_wx_all %>% mutate(air_density = air_density(temp_celcius,
+                                                               air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
+                                                               svp(temp_celcius),humidity_percent))
+
 nym_wx2 <- nym_wx %>% mutate(air_density = air_density(temp_celcius,
                                                        air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
                                                        svp(temp_celcius),humidity_percent))
@@ -183,7 +212,13 @@ col_wx2 <- col_wx %>% mutate(air_density = air_density(temp_celcius,
 bos_wx2 <- bos_wx %>% mutate(air_density = air_density(temp_celcius,
                                                        air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
                                                        svp(temp_celcius),humidity_percent))
+bos_wx2_all <- bos_wx_all %>% mutate(air_density = air_density(temp_celcius,
+                                                       air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
+                                                       svp(temp_celcius),humidity_percent))
 nyy_wx2 <- nyy_wx %>% mutate(air_density = air_density(temp_celcius,
+                                                       air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
+                                                       svp(temp_celcius),humidity_percent))
+nyy_wx2_all <- nyy_wx_all %>% mutate(air_density = air_density(temp_celcius,
                                                        air_pressure(temp_celcius,pressure_mmhg,elevation_ft),
                                                        svp(temp_celcius),humidity_percent))
 det_wx2 <- det_wx %>% mutate(air_density = air_density(temp_celcius,
@@ -242,13 +277,27 @@ final_columns <- function(joined_table) {
                           wind_direction, wind_speed_meters_per_second,
                           pressure_mmhg,temp_celcius,air_density)
 }
+final_columns_test <- function(joined_table) {
+  joined_table %>% select(pitch_type,game_date,sv_date,batter,stand,pitcher,player_name,events,
+                          description,home_team,away_team,hit_location,bb_type,inning,
+                          inning_topbot,hit_distance_sc,launch_speed,launch_angle,
+                          launch_speed_angle,at_bat_number,pitch_number,pitch_name,
+                          plate_x,plate_z,humidity_percent,des,
+                          play_date,month,hour,play_time,stadium,elevation_ft,
+                          wind_direction, wind_speed_meters_per_second,
+                          pressure_mmhg,temp_celcius,air_density)
+}
 
 KC <- final_columns(kc_wx2)
 MIA <- final_columns(mia_wx2)
 BAL <- final_columns(bal_wx2)
+BAL_ALL <- final_columns_test(bal_wx2_all)
 BOS <- final_columns(bos_wx2)
+BOS_ALL <- final_columns(bos_wx2_all)
 NYY <- final_columns(nyy_wx2)
+NYY_ALL <- final_columns(nyy_wx2_all)
 CLE <- final_columns(cle_wx2)
+CLE_ALL <- final_columns(cle_wx2_all)
 DET <- final_columns(det_wx2)
 OAK <- final_columns(oak_wx2)
 SEA <- final_columns(sea_wx2)
@@ -289,10 +338,6 @@ save(KC, MIA,BAL,BOS,NYY,CLE,DET,OAK,SEA,ATL,
 
 # traj <- function(x0,y0,z0,v0,sign,theta,r,phi1,temp,pressure,RH,elev,vwind,phiwind){
 
-
-
-
-
 all_wx2 <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
                  COL,BOS,NYY,DET,SEA,KC,
                  CHC,ATL,SD,STL,MIN,HOU,
@@ -304,6 +349,12 @@ all_wx2 <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
   mutate(distance = as.numeric(hit_distance_sc),
          l_angle = as.numeric(launch_angle),
          l_speed = as.numeric(launch_speed))
+
+all_traj100 <- all_wx2 %>% mutate(traj100 = traj(plate_x,2,plate_z,l_speed,
+                                  case_when(stand == 'R' ~ 1, stand == 'L' ~ -1),
+                                  l_angle,100,0,temp_celcius,pressure_mmhg,
+                                  humidity_percent,elevation_ft,0,0))
+
 
 
 all_wx2_nohit <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
@@ -391,7 +442,74 @@ data_stl <- STL %>%
          l_speed = as.numeric(launch_speed)) %>%
   filter(l_angle > 0,distance > 0)
 data_stl$est <- predict(lm( distance ~ l_angle+l_speed+air_density, data=data_nostl, x=TRUE ), data_stl)
+diff_stl <- data_stl %>% mutate(diff = abs(est - distance))
 pairs(data_stl[,c(47:51)], lower.panel = NULL)
+
+
+
+
+
+
+# Predict Home Run Distance in 2/5 of stadium
+data_model <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                    COL,DET,SEA,KC,
+                    CHC,MIN,HOU,
+                    MIA,LAD,CWS,STL) %>%
+  filter(air_density > 0 & air_density < 5,
+         humidity_percent > 0 & humidity_percent < 101,
+         events == 'home_run') %>%
+  mutate(distance = as.numeric(hit_distance_sc),
+         l_a = as.numeric(launch_angle),
+         l_s = as.numeric(launch_speed),
+         l_sa = as.numeric(launch_speed_angle)) %>%
+  filter(l_a > 0,distance > 0)
+data_control <- rbind(BOS,NYY,PHI,SD,ATL) %>%
+  filter(air_density > 0 & air_density < 5,
+         humidity_percent > 0 & humidity_percent < 101,
+         events == 'home_run') %>%
+  mutate(distance = as.numeric(hit_distance_sc),
+         l_a = as.numeric(launch_angle),
+         l_s = as.numeric(launch_speed),
+         l_sa = as.numeric(launch_speed_angle)) %>%
+  filter(l_a > 0,distance > 0)
+data_control$est <- predict(lm( distance ~ l_a+l_s+l_sa+air_density, data=data_control, x=TRUE ), data_control)
+diff_control <- data_control %>% mutate(diff = abs(est - distance), density_bucket = case_when(air_density <= 0.95 ~ 0.95,
+                                                                                                    air_density <= 1.0 ~ 1,
+                                                                                                    air_density <= 1.05 ~ 1.05,
+                                                                                                    air_density <= 1.1 ~ 1.1,
+                                                                                                    air_density <= 1.15 ~ 1.15,
+                                                                                                    air_density <= 1.2 ~ 1.2,
+                                                                                                    air_density <= 1.25 ~ 1.25,
+                                                                                                    air_density >= 1.25 ~ 1.3))
+ggplot(diff_control, aes(x=air_density,y=diff)) +
+  geom_point() +
+  geom_smooth() +
+  scale_x_continuous("Air Density",limits=c(1.1,1.3)) +
+  scale_y_continuous("Model diff from MLB",limits=c(0,50))
+
+
+diff_control %>%
+  ggplot(aes(x = density_bucket)) + 
+  geom_segment(size = 1, color = "grey20", aes(
+    xend = id,
+    y = jump, 
+    yend = chute)) +
+  geom_segment(lty = 1, size = 0.25, color = "grey40", aes(
+    xend = id,
+    y = chute, 
+    yend = 0)) +
+  facet_wrap(~section, scales = "free_x", ncol = 1) + 
+  labs(title = "", x = "", y = "", color = "") + 
+  scale_x_continuous(breaks = seq(0, 500, 25)) + 
+  theme(
+    panel.background = element_rect(fill = "#FFFFFF"), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.text = element_blank(),
+    axis.ticks = element_blank(),
+    legend.position = "none",
+    axis.text = element_blank())
+
 
 
 
@@ -403,13 +521,24 @@ all_hr <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
                 MIA,PHI,LAD,CWS) %>%
   filter(air_density > 0 & air_density < 5,
          humidity_percent > 0 & humidity_percent < 101,
-         events == 'home_run') %>% mutate(density_bucket = case_when(air_density < 1.0 ~ 1,
-                                                                     air_density < 1.05 ~ 1.05,
-                                                                     air_density < 1.1 ~ 1.1,
-                                                                     air_density < 1.15 ~ 1.15,
-                                                                     air_density < 1.2 ~ 1.2,
-                                                                     air_density >= 1.2 ~ 1.25))
+         events == 'home_run') %>%
+  mutate(density_bucket = case_when(air_density <= 0.95 ~ 0.95,
+                                    air_density <= 1.0 ~ 1,
+                                    air_density <= 1.05 ~ 1.05,
+                                    air_density <= 1.1 ~ 1.1,
+                                    air_density <= 1.15 ~ 1.15,
+                                    air_density <= 1.2 ~ 1.2,
+                                    air_density <= 1.25 ~ 1.25,
+                                    air_density >= 1.25 ~ 1.3))
 avg_per_game <- all_hr %>% group_by(density_bucket,home_team,game_date) %>% summarise(hrs = length(game_date)) %>% group_by(density_bucket) %>% summarise(hr_per_game = mean(hrs))
+hrg_cor <- avg_per_game %>% summarise(correlation = cor(density_bucket,hr_per_game))
+ggplot(avg_per_game, aes(x=density_bucket,y=hr_per_game)) +
+  geom_point() +
+  geom_smooth() +
+  scale_x_continuous("Air Density",limits=c(0.95,1.3)) +
+  scale_y_continuous("Home Runs per Game",limits=c(0,4))
+
+
 
 # Average fly ball distance by air density
 all_fly_ball <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
@@ -530,18 +659,25 @@ b_order <- BAL %>%
 
 
 plot_avg_density <- function(team) {
-  ggplot(team %>% group_by(play_date) %>% summarise(m = mean(air_density)), aes(play_date, m)) + 
-    geom_line() +
+  ggplot(team %>% group_by(play_date) %>% summarise(m = mean(air_density)), aes(as.Date(as.character(play_date),'%Y%m%d'), m)) + 
+    geom_point() +
     geom_smooth()
 }
+plot_avg_density_test <- function(team) {
+  ggplot(team %>% filter(sv_date > '20180401',sv_date < '20181001'), aes(as.Date(as.character(sv_date),'%Y%m%d'), air_density)) +
+    geom_point() +
+    geom_smooth()
+}
+
 plot_sd_density <- function(team) {
-  ggplot(team %>% group_by(play_date) %>% summarise(s = sd(air_density)), aes(play_date, s)) + 
-    geom_line() +
+  ggplot(team %>% group_by(play_date) %>% summarise(s = sd(air_density)), aes(as.Date(as.character(play_date),'%Y%m%d'), s)) + 
+    geom_point() +
     geom_smooth()
 }
 
 # plot_avg_density()
 plot_avg_density(BAL)
+plot_avg_density_test(BAL_ALL)
 plot_avg_density(STL)
 plot_avg_density(CHC)
 plot_avg_density(HOU)

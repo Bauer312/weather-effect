@@ -21,15 +21,24 @@
 # hwind = height of wind (ft)   assumed as 0
 
 
-
+p <- pi
 
 traj <- function(x0,y0,z0,v0,sign,theta,r,phi1,temp,pressure,RH,elev,vwind,phiwind){
-
+  #g = 9.80665 # m/s2  gravity
+  mass = 5.125 # mass of baseball
+  circ = 9.125 # circumference of base
+  #R = 0.03683  # baseball radius in meters
+  #cd = .35     # drag coefficient
+  # v = initial velocity
+  # h = height above plate ball is hit
+  # th = angle of hit
+  # den = air density
+  
 	dt = 0
 	phi = 0
-	SVP = 4.5841*EXP((18.687-temp/234.5)*temp/(257.14+temp))
+	SVP = 4.5841*exp((18.687-temp/234.5)*temp/(257.14+temp))
 	beta = 0.0001217
-	rho1 = 1.2929*(273/(temp + 273)*(pressure*EXP(-beta*elev) - 0.3783*RH*SVP/100)/760)
+	rho1 = 1.2929*(273/(temp + 273)*(pressure*exp(-beta*elev) - 0.3783*RH*SVP/100)/760)
 	rho = rho1*0.06261
 	const = 0.07182*rho*(5.125/mass)*(circ/9.125)^2
 
@@ -39,35 +48,35 @@ traj <- function(x0,y0,z0,v0,sign,theta,r,phi1,temp,pressure,RH,elev,vwind,phiwi
 	wb = -763 + 120*theta + 21*phi*sign
 	ws = -sign*849 - 94*phi
 	wg = 0
-	omega = SQRT(wb^2 + ws^2)*PI()/30
-	romega = (circ/2/PI())*omega/12
+	omega = sqrt(wb^2 + ws^2)*pi/30
+	romega = (circ/2/pi)*omega/12
 
 	# velocities
-	v0x = 1.467*v0*COS(theta*PI()/180)*SIN(phi*PI()/180)
-	v0y = 1.467*v0*COS(theta*PI()/180)*COS(phi*PI()/180)
-	v0z = 1.467*v0*SIN(theta*PI()/180)
+	v0x = 1.467*v0*cos(theta*pi/180)*sin(phi*pi/180)
+	v0y = 1.467*v0*cos(theta*pi/180)*cos(phi*pi/180)
+	v0z = 1.467*v0*sin(theta*pi/180)
 	#v0 = v0*1.467
 
-	v0xw = vwind*1.467*SIN(phiwind*PI()/180)
-	v0yw = vwind*1.467*COS(phiwind*PI()/180)
-	v0w = SQRT((v0x-v0xw)^2+(v0y-v0yw)^2+v0z^2)
+	v0xw = vwind*1.467*sin(phiwind*pi/180)
+	v0yw = vwind*1.467*cos(phiwind*pi/180)
+	v0w = sqrt((v0x-v0xw)^2+(v0y-v0yw)^2+v0z^2)
 
 	# coefficients
 	cd0 = .3008
 	cl0 = .583
 	cl1 = 2.333
 	cl2 = 1.120
-	spin = SQRT(wb^2+ws^2)
+	spin = sqrt(wb^2+ws^2)
 	cdspin = 0.0292
-	Cd = cd0 + cdspin*(spin/1000)*EXP(-dt/(tau*146.7/v0w))
-	S = (romega/v0w)*EXP(-dt/(tau*146.7/v0w))
+	Cd = cd0 + cdspin*(spin/1000)*exp(-dt/(tau*146.7/v0w))
+	S = (romega/v0w)*exp(-dt/(tau*146.7/v0w))
 	Cl = cl2*S/(cl0+cl1*S)
 
 	# angular acceleration
-	w = omega*EXP(-dt/tau)*30/PI()
-	wx = (wb*COS(phi*PI()/180) - ws*SIN(theta*PI()/180)*SIN(phi*PI()/180) + wg*v0x/v0)*PI()/30
-	wy = (-wb*SIN(phi*PI()/180) - ws*SIN(theta*PI()/180)*COS(phi*PI()/180) + wg*v0y/v0)*PI()/30
-	wz = (ws*COS(theta*PI()/180) + wg*v0z/v0)*PI()/30
+	w = omega*exp(-dt/tau)*30/pi
+	wx = (wb*cos(phi*pi/180) - ws*sin(theta*pi/180)*sin(phi*pi/180) + wg*v0x/v0)*pi/30
+	wy = (-wb*sin(phi*pi/180) - ws*sin(theta*pi/180)*cos(phi*pi/180) + wg*v0y/v0)*pi/30
+	wz = (ws*cos(theta*pi/180) + wg*v0z/v0)*pi/30
 
 	# acceleration
 	adragx = -const*Cd*v0w*(v0x - v0xw)
@@ -86,31 +95,31 @@ traj <- function(x0,y0,z0,v0,sign,theta,r,phi1,temp,pressure,RH,elev,vwind,phiwi
 
 	# final ##############################
 	r = sqrt(x^2 + y^2)
-	phi = phi1  #ATAN2(y,x)*180/PI()
+	phi = phi1  #ATAN2(y,x)*180/pi
 	dt = (-y0*sin(phi)*tan(phi) + r*sin^2(phi) + x0*cos(phi)*tan(phi) - r*cos(phi)*tan(phi)*sin(phi)) / (tan(phi)*(v0y*sin(phi) - v0*cos(phi)))
 
 	# spin
 	wb = -763 + 120*theta + 21*phi*sign
 	ws = -sign*849 - 94*phi
 	wg = 0
-	omega = SQRT(wb^2 + ws^2)*PI()/30
-	romega = (circ/2/PI())*omega/12
+	omega = sqrt(wb^2 + ws^2)*pi/30
+	romega = (circ/2/pi)*omega/12
 
 	# velocities
 	vx = v0x + a0x*dt
 	vy = v0y + a0y*dt
 	vz = v0z + a0z*dt
-	v = SQRT(vx^2 + vy^2 + vz^2)
+	v = sqrt(vx^2 + vy^2 + vz^2)
 	
-	vxw = vwind*1.467*SIN(phiwind*PI()/180)
-	vyw = vwind*1.467*COS(phiwind*PI()/180)
-	vw = SQRT((vx-vxw)^2+(vy-vyw)^2+vz^2)
+	vxw = vwind*1.467*sin(phiwind*pi/180)
+	vyw = vwind*1.467*cos(phiwind*pi/180)
+	vw = sqrt((vx-vxw)^2+(vy-vyw)^2+vz^2)
 
 	# coefficients
-	spin = SQRT(wb^2+ws^2)
+	spin = sqrt(wb^2+ws^2)
 	cdspin = 0.0292
-	Cd = cd0 + cdspin*(spin/1000)*EXP(-dt/(tau*146.7/vw))
-	S = (romega/vw)*EXP(-dt/(tau*146.7/vw))
+	Cd = cd0 + cdspin*(spin/1000)*exp(-dt/(tau*146.7/vw))
+	S = (romega/vw)*exp(-dt/(tau*146.7/vw))
 	Cl = cl2*S/(cl0+cl1*S)
 
 	# acceleration
