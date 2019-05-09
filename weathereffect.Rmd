@@ -32,21 +32,48 @@ endnote: no
 ```{r child = 'introduction.Rmd'}
 ```
 
-# Data
+## Data
 
-## MLB Baseball Savant
+### MLB Baseball Savant
 
 ```{r child = 'baseballsavant.Rmd'}
 ```
 
-## Weather Underground
+### MLB GameDay
+
+```{r child = 'gameday.Rmd'}
+```
+
+### NOAA
+
+```{r child = 'noaa.Rmd'}
+```
+
+### Weather Underground
 
 ```{r child = 'weatherunderground.Rmd'}
 ```
 
-# Methodology
+# Methods
 
 ```{r child = 'methodology.Rmd'}
+```
+
+# Results
+
+## Hitting
+
+```{r child = 'hitting.Rmd'}
+```
+
+## Pitching
+
+```{r child = 'pitching.Rmd'}
+```
+
+# Discussion
+
+```{r child = 'discussion.Rmd'}
 ```
 
 # Notes

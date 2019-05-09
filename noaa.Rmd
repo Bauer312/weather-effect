@@ -1,0 +1,1 @@
+The National Weather Service provides weather data primarily from commercial airports and military bases.
