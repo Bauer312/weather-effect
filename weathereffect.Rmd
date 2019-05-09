@@ -29,76 +29,25 @@ endnote: no
 
 # Introduction
 
-Baseball is a sport traditionally played outdoors and with a long season, players inevitably face a wide variety of weather.  Players have passed down tales of home runs that fall short due to temperature [@kagan2017mlfb] and scientists have studied the variations in laboratory settings [@cross2011pbs, pp 43-44] [@bahill2019sb, pp 180-188].  We know now that air density affects the flight of the ball and that temperature, humidity and air pressure all play a role in increasing or decreasing the air density.  Using air density, we can model baseball flight using formulas that have been derived for that purpose.
-
-The differing weather that players face should cause performance to vary, and indeed analysis of available baseball data has shown that observed differences in the flight of the ball can be correlated with measured weather data [@kagan2017mlfb].  This analysis has shown that the quality of the weather data is important for demonstrating the statistical significance of these differences.  Weather data has typically been available from airports that are near the baseball stadiums, and when the airports are closer, the results of the analysis is of higher quality [@kagan2017mlfb, pg 6].  Unfortunately, few baseball stadiums are very close to commercial airports.  The quality of the weather data used thus far is much worse than the quality of the baseball data.
-
-In addition to the effect of weather on a baseball in flight, the human body is affected by the weather.  Analysis has shown that temperature affects players differently based on how active they are during the time that their team is on defense [@schifman2016cwpp].  Intuitively, this make sense; players that must be active on defense are building up body heat and are keeping their muscles loose.  Interestingly as well, pitchers report that it is harder to grip the ball when it is cold [@constancio2006te, pg 2].
-
-We have found ways to identify and access weather data from weather stations that are closer to baseball stadiums.  The availablity of this data should result in much better data quality and will allow us to better model the differences in ball trajectories based on weather.  It will allow us to quantify how much of the difference in flight is from the air density and how much is from the player.  This will allow us to generate a model that predicts the performance/distance of a batted ball if it were to have happened in another stadium at any specific time (assuming we have weather data for that time).
-
-The path of each hit will be transfered from one stadium to another through the use of the unique variables of air density, gravitational acceleration due to elevation, as well as the wind speed and direction at the time of the pitch.  The change in change in the distance the ball would travel will be what is primarily what will be looked at however, the change in the height the ball reaches as well as if it is pushed horizonally could also be explored.  By exmaining this there is the potential to find advantages weather conditions for a batter.  Examining how a pitcher pitches are affected by the weather may also be looked at using the same variables.
-
+```{r child = 'introduction.Rmd'}
+```
 
 # Data
 
 ## MLB Baseball Savant
 
-The Baseball Savant site (https://baseballsavant.mlb.com) provides detailed pitch-by-pitch data directly from Major League Baseball.  This data is generated using a suite of instruments installed in every major league stadium.  Gathering data for research use can be done using the search function (https://baseballsavant.mlb.com/statcast_search).  The amount of data that can be retrieved in a single query is limited, so the retrieval of an entire season can be done by querying for each team individually and then selecting the "download CSV" option.  The _sv_id_ column in the data gives an encoded date and time for each pitch.  For example, an _sv_id_ of `181001_195541` refers to a pitch that occured on October 1, 2018 at 19:55:41.  The data does not distinguish whether that refers to local time, eastern time, or UTC time.  To determine the value, we examined all Savant records in which _sv_id_ was populated and the _pitch_number_ and _at_bat_number_ were both 1.  This indicated the time of the first pitch of each game.  Using Baseball Reference (https://baseball-reference.com) we can find the start time of each game and compare to the time portion of _sv_id_.  The April 10, 2018 game between the Cubs and Pirates at Wrigley Field had a published start time of 1:20 PM Central (2:20 PM Eastern).  The _sv_id_ for the first pitch was `180410_182326` indicating that the first pitch was at 6:23 PM.  Chicago is 5 hours behind UTC time, so 1:23 PM in Chicago corresponds with 6:23 PM UTC.  This shows that the time portion of the _sv_id_ field is listed as UTC time.
+```{r child = 'baseballsavant.Rmd'}
+```
 
 ## Weather Underground
 
-Weather Underground is a site (https://www.wunderground.com) that contains data for a number of "official" weather stations as well as ~250,000 personal weather stations from around the globe.  Each weather station has a unique identifying code in the Weather Underground system.  For example, weather station KMABROOK5 is at the corner of Beacon and Carlton St just a few blocks west of Fenway Park.  Weather station KMABOSTO55 is listed as at Fenway Park itself, but unfortunately attempts to query the Weather Underground API for data from this station was unsuccessful.  When viewing the dashboard for a weather station (https://www.wunderground.com/dashboard/pws/KMABROOK5), all data for that weather station for a particular day is loaded.  By looking at the format of the request made by the web browser, we can see how to query any weather station for any day.  The data is returned as a set of observations in the JSON format.  We have developed a tool that "flattens" these observations into a CSV format suitable for use in R.  An example of the raw observation data provided by Weather Underground is shown below:
-```json
-{
-  "stationID":"KCASANFR1213",
-  "tz":"America/Los_Angeles",
-  "obsTimeUtc":"2018-04-03T07:02:00Z",
-  "obsTimeLocal":"2018-04-03 00:02:00",
-  "epoch":1522738920000,
-  "lat":37.771065, "lon":-122.38821,
-  "solarRadiationHigh":0,
-  "uvHigh":0,
-  "winddirAvg":244,
-  "humidityHigh":77, "humidityLow":77, "humidityAvg":77,
-  "qcStatus":-1,
-  "imperial":{
-    "tempHigh":53, "tempLow":53, "tempAvg":53,
-    "windspeedHigh":4, "windspeedLow":4, "windspeedAvg":4,
-    "windgustHigh":6, "windgustLow":6, "windgustAvg":6,
-    "dewptHigh":46, "dewptLow":46, "dewptAvg":46,
-    "windchillHigh":null, "windchillLow":null, "windchillAvg":null,
-    "heatindexHigh":null, "heatindexLow":null, "heatindexAvg":null,
-    "pressureMax":29.58, "pressureMin":29.58, "pressureTrend":0.00,
-    "precipRate":0.00, "precipTotal":0.00
-  }
-}
+```{r child = 'weatherunderground.Rmd'}
 ```
-
-Each weather station reports data to Weather Underground periodically.  However, each weather station is different in frequency and time between observations.  For many of the weather variables, the observation contains the minimum, maximum and average value of that variable over the time period since the prior observation.  For this reason, we have to use the average value of that variable as our data point for the range of time between observations.  The barometric pressure readings, on the other hand, only show a high and low value as well as the trend, but the trend is frequently empty.  We have decided to average the high and low values and use that.
-
-Unfortunately, the barometric pressure is further complicated by the fact that there are multiple ways to report pressure (true pressure as observed at the station, sea level corrected pressuere, or sea level corrected pressure with past readings factored in) and each station reports in one of those ways without specifying which it is reporting [@choosepws2012].  The National Weather Service reports sea level corrected pressure at airports.  By comparing the weather station value with the nearby airport value for observations at the same time, we can make an educated guess about the reporting method used by the weather station.  As the elevation of a weather station increases, the pressure decreases - about 1.1 inHG per 1000 feet [@choosepws2012].  If the simultaneous pressure reading of the weather station and the airport differs be a few hundredths (inHg), then the weather station is highly likely to be reporting the sea level corrected pressure rather than the true pressure.
 
 # Methodology
 
-As a prerequisite to conducting analysis of the data, we must first assemble a clean dataset that is properly merged and contains relevant information.  As both the Baseball Savant and the Weather Underground data include a UTC time, we can merge data using this.  The Baseball Savant data gives an exact time (to the second) while the Weather Underground data gives a timestamp that indicates the data is valid from the previous reading up to and including the timestamp.  We must process the Weather Underground data ordered by station and time, and generate an explicit time range from the implied range that comes from the observation data and the ordering of the observation data.  We must also generate a cross referencing of home team to weather station.  In the 2018 baseball season, the Baseball Savant data set includes 721,190 records and 126,283 records in which the ball was put into play.  The _sv_id_ field was empty for 392,521 of the records and for 68,878 of the records in which the ball was put into play.  This field is necessary for merging with weather data so we must generate a value to use with the missing data.  Because the weather data has an implied granularity that ranges from a few minutes all the way up to nearly an hour, we only need to get each missing _sv_id_ value correct to within a few minutes to be considered clean for merging purposes.
-
-In both the Baseball Savant data and the Weather Underground data, we must convert the UTC information and _sv_id_ information to a common format.  In the Baseball Savant data, the _sv_id_ (a text string) of `180410_182326` is converted to an integer value of `20180410182336`.  In the Weather Underground data, the _obsTimeLocal_ (a text string) of `2018-04-03 00:02:00` is converted to an integer value of `20180403000200`.  To join a specific Baseball Savant time to a Weather Underground time range, we join the two together such that the Baseball Savant time is _greater than_ the beginning of the Weather Underground time range and is also _less than or equal to_ the end of the Weather Underground time range.  We must also cross reference the home team in the Baseball Savant data to the weather station in the Weather Underground data.  This can only be done by generating our own cross reference data table:
-
-```json
-"home_team","weather_station","elevation_ft","true_pressure"
-"ARI","KAZPHOEN469",1280,"N"
-"ATL","KGAATLAN378",919,"Y"
-"BAL","KMDBALTI156",32,"Y"
-"BOS","KMABROOK5",39,"Y"
-"CHC","KILCHICA60",610,"N"
-"CWS","KILCHICA600",600,"N"
-"CIN","KOHCINCI398",607,"N"
-"CLE","KOHCLEVE180",730,"N"
-"COL","KCODENVE78",5225,"N"
+```{r child = 'methodology.Rmd'}
 ```
-
-The formula for calculating air density is described in @bahill2019sb [pp180-182] and is an input to the ball trajectory code.  The three inputs to the calculation are the temperature, the humidity level, and the true station pressure.  The cross reference data table includes both the weather station elevation and our educated guess on whether or not the station is reporting the true station pressure.  If it not, we must convert the sea level corrected pressure to true station pressure, a formula for which is also described in @bahill2019sb [pp180-182].
 
 # Notes
 
