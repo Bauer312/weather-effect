@@ -1,0 +1,1 @@
+MLB also makes data available using its GameDay interface.  These files are in XML format.
