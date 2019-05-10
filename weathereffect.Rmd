@@ -6,7 +6,7 @@ output:
     fig_caption: true
     latex_engine: pdflatex
     template: template.tex
-title: "Long, Long Ago in a Stadium Far, Far Away: Playing the What-If Game."
+title: "The Effects of Weather in Major League Baseball."
 author:
 - name: Aaron Hung
   affiliation: Harvard University Extension
@@ -32,24 +32,24 @@ endnote: no
 ```{r child = 'introduction.Rmd'}
 ```
 
-## Data
+# Data
 
-### MLB Baseball Savant
+## MLB Baseball Savant
 
 ```{r child = 'baseballsavant.Rmd'}
 ```
 
-### MLB GameDay
+## MLB GameDay
 
 ```{r child = 'gameday.Rmd'}
 ```
 
-### NOAA
+## NOAA
 
 ```{r child = 'noaa.Rmd'}
 ```
 
-### Weather Underground
+## Weather Underground
 
 ```{r child = 'weatherunderground.Rmd'}
 ```
