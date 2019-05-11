@@ -61,6 +61,11 @@ endnote: no
 
 # Results
 
+## Weather
+
+```{r child = 'weather.Rmd'}
+```
+
 ## Hitting
 
 ```{r child = 'hitting.Rmd'}
