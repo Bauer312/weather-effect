@@ -15,4 +15,25 @@ In both the Baseball Savant data and the Weather Underground data, we must conve
 "COL","KCODENVE78",5225,"N"
 ```
 
-The formula for calculating air density is described in @bahill2019sb [pp180-182] and is an input to the ball trajectory code.  The three inputs to the calculation are the temperature, the humidity level, and the true station pressure.  The cross reference data table includes both the weather station elevation and our educated guess on whether or not the station is reporting the true station pressure.  If it not, we must convert the sea level corrected pressure to true station pressure, a formula for which is also described in @bahill2019sb [pp180-182].
+The formula for calculating air density is described in @bahill2019sb [pp180-182] and is an input to the ball trajectory code.  The three inputs to the calculation are the temperature, the humidity level, and the true station pressure.  The cross reference data table includes both the weather station elevation and our educated guess on whether or not the station is reporting the true station pressure.  If it not, we must convert the sea level corrected pressure to true station pressure, a formula for which is also described in @bahill2019sb [pp180-182].  We implemented the formulas in R code, as shown below.
+
+```{r eval=FALSE}
+svp <- function(temp_celcius) {
+  numerator = (18.687 - (temp_celcius/234.5)) * temp_celcius
+  denominator = 257.14 + temp_celcius
+  4.5841 * (2.71828 ^ (numerator / denominator))
+}
+
+air_pressure <- function(temp_celcius,bp_mmHg_sea_level,altitude_ft) {
+  numerator = (-9.80665*0.0289644*altitude_ft*0.3048)
+  denominator = (8.31447*(temp_celcius+273.15))
+  bp_mmHg_sea_level * (2.71828 ^ (numerator / denominator))
+}
+
+air_density <- function(temp_celcius,air_pressure_mmHg,svp_mmHg,humidity_percent) {
+  part1 = 273/(temp_celcius+273)
+  part2 = 0.379 * svp_mmHg * humidity_percent / 100
+  part3 = (air_pressure_mmHg - part2) / 760
+  1.2929 * part1 * part3
+}
+```
