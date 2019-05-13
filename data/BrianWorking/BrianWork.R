@@ -317,7 +317,7 @@ CHC <- final_columns(chc_wx2)
 HOU <- final_columns(hou_wx2)
 save(KC, MIA,BAL,BOS,NYY,CLE,DET,OAK,SEA,ATL,
      NYM,WAS,COL,SD,STL,MIN,PHI,LAD,SF,CWS,CHC,HOU,
-     file="../Teams.RData")
+     file="Teams.RData")
 
 # Input
 # corner of home plate z-axis = height y-axis = line between home plate and 2nd base  x-axis perpendicular to other axis 
@@ -368,6 +368,17 @@ all_wx2_nohit <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
          l_angle = as.numeric(launch_angle),
          l_speed = as.numeric(launch_speed))
 
+BallsInPlay <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
+                       COL,BOS,NYY,DET,SEA,KC,
+                       CHC,ATL,SD,STL,MIN,HOU,
+                       MIA,PHI,LAD,CWS) %>%
+  filter(air_density > 0 & air_density < 5,
+         humidity_percent > 0 & humidity_percent < 101) %>%
+  mutate(distance = as.numeric(hit_distance_sc),
+         l_angle = as.numeric(launch_angle),
+         l_speed = as.numeric(launch_speed))
+save(BallsInPlay,file="BallsInPlay.RData")
+
 data_nostl <- rbind(BAL,WAS,OAK,CLE,NYM,SF,
                     COL,BOS,NYY,DET,SEA,KC,
                     CHC,ATL,SD,MIN,HOU,
@@ -396,12 +407,21 @@ july_afternoon <- all_wx2_nohit %>% filter(month == 7, hour > 11 & hour < 16) %>
 
 july_cmp <- all_wx2_nohit %>% filter(month == 7) %>% group_by(home_team) %>% summarise(ad = mean(air_density), at = mean(temp_celcius))
 pairs(july_cmp[,c(2:3)], lower.panel = NULL)
+
+
 all_cmp <- all_wx2_nohit %>% group_by(play_date,home_team) %>%
   summarise(density = mean(air_density),
             temp = mean(temp_celcius),
             humidity = mean(humidity_percent),
             pressure = mean(pressure_mmhg))
 pairs(all_cmp[,c(3:6)], lower.panel = NULL)
+
+BallsInPlayCorrelation <- BallsInPlay %>% group_by(play_date,home_team) %>%
+  summarise(density = mean(air_density),
+            temp = mean(temp_celcius),
+            humidity = mean(humidity_percent),
+            pressure = mean(pressure_mmhg))
+pairs(BallsInPlayCorrelation[,c(3:6)], lower.panel = NULL)
 
 
 august_afternoon <- all_wx2_nohit %>% filter(month == 8, hour > 11 & hour < 16) %>% group_by(home_team) %>% summarise(avg = median(air_density))
