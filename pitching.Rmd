@@ -2,22 +2,22 @@ Our analysis of pitch movement showed that overall, pitches move more as air den
 
 When looking at individual pitchers, we see that the movement change is highly individualize and that factors such as grip and talent play a role.  For example, we found that Chris Sale sees almost no change at all in the movement of his 4-seam fast ball, while his slider and change up have the largest increase in movement.
 
-![Chris Sale 4-Seam Fastball](ChrisSale-FF.png)
+![Chris Sale 4-Seam Fastball](img/ChrisSale-FF.png)
 
-![Chris Sale 2-Seam Fastball](ChrisSale-FT.png)
+![Chris Sale 2-Seam Fastball](img/ChrisSale-FT.png)
 
-![Chris Sale Changeup](ChrisSale-CH.png)
+![Chris Sale Changeup](img/ChrisSale-CH.png)
 
-![Chris Sale Slider](ChrisSale-SL.png)
+![Chris Sale Slider](img/ChrisSale-SL.png)
 
 On the other hand, Carlos Carrasco's slider appears to have reduced movement as air density increases.  His change up movement increases quite a bit more than Chris Sale's, as does his 2-seam fastball.  His 4-seam fastball has a very similar change in movement to Chris Sale.
 
-![Carlos Carrasco 4-Seam Fastball](Carrasco-FF.png)
+![Carlos Carrasco 4-Seam Fastball](img/Carrasco-FF.png)
 
-![Carlos Carrasco 2-Seam Fastball](Carrasco-FT.png)
+![Carlos Carrasco 2-Seam Fastball](img/Carrasco-FT.png)
 
-![Carlos Carrasco Changeup](Carrasco-CH.png)
+![Carlos Carrasco Changeup](img/Carrasco-CH.png)
 
-![Carlos Carrasco Slider](Carrasco-SL.png)
+![Carlos Carrasco Slider](img/Carrasco-SL.png)
 
 Because the change in pitch movement for each pitch type is highly individualized, it is possible that further study can show that individual pitchers have different pitches that are most and least effective based on the weather, and that such knowledge could be useful for both pitchers and batters.
