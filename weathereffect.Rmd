@@ -79,4 +79,4 @@ endnote: no
 
 # Notes
 
-The formatting for this paper is based on templates provided by Steven V. Miller and are located on his Github account (https://github.com/svmiller).
+Our project page contains all data and code for replication purposes.  It is available on Brian Bauer's Github account (https://github.com/Bauer312/weather-effect).  The formatting for this paper is based on templates provided by Steven V. Miller and are located on his Github account (https://github.com/svmiller).
