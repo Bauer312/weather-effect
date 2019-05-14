@@ -116,9 +116,11 @@ ControlBallsInPlay <- BallsInPlay %>% filter(home_team %in% ControlGroup) %>%
          l_sa = as.numeric(launch_speed_angle)) %>%
   filter(l_a > 0,distance > 0)
 
-ControlBallsInPlay$est <- predict(lm(distance ~ l_a+l_s+l_sa+air_density,
-                                     data=ModelBallsInPlay, x=TRUE ),
-                                  ControlBallsInPlay)
+PredictionModel <- lm(distance ~ l_a+l_s+l_sa+air_density,
+                      data=ModelBallsInPlay, x=TRUE )
+
+ControlBallsInPlay$est <- predict(PredictionModel, ControlBallsInPlay)
+
 DistanceDiff <- ControlBallsInPlay %>% 
   mutate(diff = abs(est - distance),
          density_bucket = case_when(air_density <= 0.95 ~ 0.95,
@@ -135,3 +137,29 @@ ggplot(DistanceDiff, aes(x=air_density,y=diff)) +
   geom_smooth() +
   scale_x_continuous("Air Density",limits=c(1.1,1.3)) +
   scale_y_continuous("Model diff from MLB",limits=c(0,50))
+
+#
+# What would happen if all Fenway Park hits had happened on
+#   June 10th in Colorado (air density of 0.9478296)?
+#
+AllBallsInPlay <- BallsInPlay %>%
+  mutate(distance = as.numeric(hit_distance_sc),
+         l_a = as.numeric(launch_angle),
+         l_s = as.numeric(launch_speed),
+         l_sa = as.numeric(launch_speed_angle)) %>%
+  filter(l_a > 0,distance > 250)
+PredictionModel <- lm(distance ~ l_a+l_s+l_sa+air_density,
+                      data=AllBallsInPlay, x=TRUE )
+BostonBallsInPlay <- AllBallsInPlay %>%
+  filter(home_team == "BOS") %>%
+  mutate(air_density = 0.9478296)
+
+BostonBallsInPlay$est <- predict(PredictionModel, BostonBallsInPlay)
+BostonDistanceDiff <- BostonBallsInPlay %>% 
+  mutate(diff = abs(est - distance))
+
+ggplot(BostonBallsInPlay, aes(x=distance,y=est)) +
+  geom_point() +
+  geom_smooth() +
+  scale_x_continuous("Original Distance",limits=c(250,500)) +
+  scale_y_continuous("Model Distance",limits=c(250,500))
