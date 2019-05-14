@@ -24,3 +24,6 @@ The research project is 40% of the final grade - 30% paper and 10% presentation.
 
 ## Challenges
 Finding useful weather data from weather stations that are near baseball stadiums may prove to be very difficult.
+
+## Code and Data used in paper analysis
+The code and data used in the analysis for this paper are in the data/ folder.  Following the directory structure within the data/ folder contains code and data that have been gathered during the project.
