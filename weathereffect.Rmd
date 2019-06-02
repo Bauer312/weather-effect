@@ -16,7 +16,7 @@ author:
   affiliation: Harvard University Extension
 - name: Kiran Ravella
   affiliation: Harvard University Extension
-abstract: "Weather has long been known to affect the flight of the baseball.  Scientific effort has given us the ability to calculate flight trajectories in a laboratory setting.  Previous analysis has been done with real-world baseball and weather data, but has been hampered by the lack of good weather data.  We use very accurate baseball data and much more accurate weather data to build a model that predicts the flight of a batted ball as if it had been hit in a different stadium or at a different time."
+abstract: "Weather has long been known to affect the flight of the baseball.  Scientific effort has given us the ability to calculate flight trajectories in a laboratory setting.  Previous analysis has been done with real-world baseball and weather data, but has been hampered by the lack of good weather data.  We use improved weather data and the latest major league data sources to examine the effects and begin to build a model and a process for predicting outcomes if they had happened in a different stadium or at a different time."
 keywords: "weather, baseball"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 geometry: margin=1in
