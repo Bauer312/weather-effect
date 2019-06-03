@@ -8,9 +8,9 @@ output:
     template: template.tex
 title: "The Effects of Weather in Major League Baseball."
 author:
-- name: Aaron Hung
-  affiliation: Harvard University Extension
 - name: Brian Bauer
+  affiliation: Harvard University Extension
+- name: Aaron Hung
   affiliation: Harvard University Extension
 - name: Kevin Stein
   affiliation: Harvard University Extension
